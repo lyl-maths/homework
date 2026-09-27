@@ -58,26 +58,16 @@
       border: none; padding: 12px; font-size: 1.05em; font-weight: bold;
       border-radius: 6px; cursor: pointer;
     }
-    .search-btn:disabled {
-      background-color: #a0aec0 !important; cursor: not-allowed !important;
-    }
+    .search-btn:disabled { background-color: #a0aec0 !important; cursor: not-allowed !important; }
 
-    .data-table {
-      width: 100%; border-collapse: collapse; margin-top: 15px;
-    }
-
-    .data-table th, .data-table td {
-      border: 1px solid var(--border-color); padding: 10px; text-align: left;
-    }
-
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .data-table th, .data-table td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
     .data-table th { background-color: var(--accent-info); color: var(--primary-color); }
 
-    .badge-type {
-      background: #e2e8f0; color: #1e293b; padding: 4px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; display: inline-block;
-    }
-
+    .badge-type { background: #e2e8f0; color: #1e293b; padding: 4px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; display: inline-block; }
     .badge-missing { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
     .badge-date { background: #d97706; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
+    .badge-overdue-fix { background: #e65100; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
     .badge-fix { background: #ffc107; color: black; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
 
     .student-row-click { cursor: pointer; }
@@ -92,22 +82,12 @@
       background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
     }
-
     .option-btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
     .option-btn {
       padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg);
       color: var(--text-color); border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center;
-      transition: all 0.2s;
     }
-    .option-btn:hover { border-color: var(--primary-color); }
     .option-btn.active { border-color: var(--primary-color); background-color: var(--primary-color); color: white; }
-
-    .color-btn[data-theme="blue"] { border-color: #0056b3; }
-    .color-btn[data-theme="orange"] { border-color: #e65100; }
-    .color-btn[data-theme="yellow"] { border-color: #f57f17; }
-    .color-btn[data-theme="green"] { border-color: #2e7d32; }
-    .color-btn[data-theme="black"] { border-color: #333333; }
-    .color-btn[data-theme="purple"] { border-color: #6f42c1; }
   </style>
 </head>
 <body>
@@ -187,154 +167,21 @@
     </table>
   </div>
 
-  <!-- 個人化 Modal -->
-  <div class="modal-overlay" id="themeModal">
-    <div class="modal-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;">🎨 個人化介面設定</h3>
-        <span onclick="closeThemeModal()" style="cursor:pointer; font-weight:bold;">✕</span>
-      </div>
-
-      <div style="margin-bottom:20px;">
-        <label style="font-weight:bold;">🎨 點擊按鈕選取主題顏色：</label>
-        <div class="option-btn-grid" id="colorBtnGroup">
-          <button class="option-btn color-btn" data-theme="blue" onclick="selectThemeBtn('blue')">💙 藍色</button>
-          <button class="option-btn color-btn" data-theme="orange" onclick="selectThemeBtn('orange')">🧡 橙色</button>
-          <button class="option-btn color-btn" data-theme="yellow" onclick="selectThemeBtn('yellow')">💛 黃色</button>
-          <button class="option-btn color-btn" data-theme="green" onclick="selectThemeBtn('green')">💚 綠色</button>
-          <button class="option-btn color-btn" data-theme="black" onclick="selectThemeBtn('black')">🖤 黑色</button>
-          <button class="option-btn color-btn" data-theme="purple" onclick="selectThemeBtn('purple')">💜 紫色</button>
-        </div>
-      </div>
-
-      <div style="margin-bottom:25px;">
-        <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
-        <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
-          <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
-          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
-          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
-          <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
-        </div>
-      </div>
-
-      <button onclick="saveThemeSettings()" style="width:100%; padding:12px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold; font-size:1.05em; cursor:pointer;">💾 儲存並套用設定</button>
-    </div>
-  </div>
-
   <script>
-    let tempSelectedTheme = 'blue';
-    let tempSelectedFont = '15px';
     let rawSummaryData = [];
     let rawRecordsData = [];
 
-    function applySavedTheme() {
-      const theme = localStorage.getItem('homework_theme') || 'blue';
-      const fontSize = localStorage.getItem('homework_font_size') || '15px';
-      const root = document.documentElement;
-
-      root.style.setProperty('--base-font-size', fontSize);
-
-      if (theme === 'orange') {
-        root.style.setProperty('--primary-color', '#e65100');
-        root.style.setProperty('--bg-color', '#fff3e0');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#3e2723');
-        root.style.setProperty('--border-color', '#ffe0b2');
-        root.style.setProperty('--accent-info', '#fff8e1');
-      } else if (theme === 'yellow') {
-        root.style.setProperty('--primary-color', '#f57f17');
-        root.style.setProperty('--bg-color', '#fffde7');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#332701');
-        root.style.setProperty('--border-color', '#fff9c4');
-        root.style.setProperty('--accent-info', '#fffde7');
-      } else if (theme === 'green') {
-        root.style.setProperty('--primary-color', '#2e7d32');
-        root.style.setProperty('--bg-color', '#f1f8e9');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#1b5e20');
-        root.style.setProperty('--border-color', '#c8e6c9');
-        root.style.setProperty('--accent-info', '#e8f5e9');
-      } else if (theme === 'black') {
-        root.style.setProperty('--primary-color', '#4dabf7');
-        root.style.setProperty('--bg-color', '#121212');
-        root.style.setProperty('--card-bg', '#1e1e1e');
-        root.style.setProperty('--text-color', '#e0e0e0');
-        root.style.setProperty('--border-color', '#444444');
-        root.style.setProperty('--accent-info', '#2a2a2a');
-      } else if (theme === 'purple') {
-        root.style.setProperty('--primary-color', '#6f42c1');
-        root.style.setProperty('--bg-color', '#f3e8ff');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#3b0764');
-        root.style.setProperty('--border-color', '#d8b4fe');
-        root.style.setProperty('--accent-info', '#faf5ff');
-      } else {
-        root.style.setProperty('--primary-color', '#0056b3');
-        root.style.setProperty('--bg-color', '#f4f7f9');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#333333');
-        root.style.setProperty('--border-color', '#cccccc');
-        root.style.setProperty('--accent-info', '#f0f7ff');
-      }
-    }
-
-    function openThemeModal() {
-      tempSelectedTheme = localStorage.getItem('homework_theme') || 'blue';
-      tempSelectedFont = localStorage.getItem('homework_font_size') || '15px';
-      selectThemeBtn(tempSelectedTheme);
-      selectFontBtn(tempSelectedFont);
-      document.getElementById('themeModal').style.display = 'flex';
-    }
-
-    function selectThemeBtn(theme) {
-      tempSelectedTheme = theme;
-      document.querySelectorAll('#colorBtnGroup .option-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-      });
-    }
-
-    function selectFontBtn(size) {
-      tempSelectedFont = size;
-      document.querySelectorAll('#fontBtnGroup .option-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-size') === size);
-      });
-    }
-
-    function closeThemeModal() {
-      document.getElementById('themeModal').style.display = 'none';
-    }
-
-    function saveThemeSettings() {
-      localStorage.setItem('homework_theme', tempSelectedTheme);
-      localStorage.setItem('homework_font_size', tempSelectedFont);
-      applySavedTheme();
-      closeThemeModal();
-    }
-
-    function navigateToHome() {
-      const currentPath = window.location.pathname;
-      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      window.location.replace(window.location.origin + directory + 'index.html');
-    }
-
     window.onload = function() {
-      applySavedTheme();
-
       const today = new Date().toISOString().split('T')[0];
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       document.getElementById('startDate').value = thirtyDaysAgo;
       document.getElementById('endDate').value = today;
-
       fetchStatsData();
     };
 
     function fetchStatsData() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
-      if (!apiUrl) {
-        alert('請先在設定頁面配置 Web App URL！');
-        return;
-      }
+      if (!apiUrl) { alert('請先設定 Web App URL！'); return; }
 
       const searchBtn = document.getElementById('searchBtn');
       searchBtn.disabled = true;
@@ -354,70 +201,17 @@
           searchBtn.innerText = '🔍 查詢統計資料';
 
           if (res.status === 'success') {
-            updateFilterOptions(res.subjects || [], res.classes || []);
             rawSummaryData = res.summary || [];
             rawRecordsData = res.records || [];
-
-            populateStudentDropdown();
             renderSummaryTable(rawSummaryData);
             renderRecordsTable();
-          } else {
-            alert('查詢失敗：' + res.message);
           }
         })
-        .catch(err => {
+        .catch(() => {
           searchBtn.disabled = false;
           searchBtn.innerText = '🔍 查詢統計資料';
-          alert('連線錯誤：請確認 Web App 已發布為「新版本」且權限為「任何人」。');
+          alert('連線錯誤。');
         });
-    }
-
-    function updateFilterOptions(subjects, classes) {
-      const subSelect = document.getElementById('subjectSelect');
-      const clsSelect = document.getElementById('classSelect');
-
-      const currentSub = subSelect.value;
-      const currentCls = clsSelect.value;
-
-      subSelect.innerHTML = '<option value="ALL">全部科目</option>';
-      subjects.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s; opt.innerText = s;
-        if (s === currentSub) opt.selected = true;
-        subSelect.appendChild(opt);
-      });
-
-      clsSelect.innerHTML = '<option value="ALL">全部班別</option>';
-      classes.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c; opt.innerText = c;
-        if (c === currentCls) opt.selected = true;
-        clsSelect.appendChild(opt);
-      });
-    }
-
-    function populateStudentDropdown() {
-      const studentSelect = document.getElementById('studentSelect');
-      const currentSelected = studentSelect.value;
-      studentSelect.innerHTML = '<option value="ALL">全部學生</option>';
-
-      rawSummaryData.forEach(st => {
-        const opt = document.createElement('option');
-        opt.value = st.studentId;
-        opt.innerText = `(${st.classGroup}) (${st.studentId}) ${st.studentName}`;
-        if (st.studentId === currentSelected) opt.selected = true;
-        studentSelect.appendChild(opt);
-      });
-    }
-
-    function onStudentSelectChange() {
-      renderRecordsTable();
-    }
-
-    function selectSingleStudent(studentId) {
-      const studentSelect = document.getElementById('studentSelect');
-      studentSelect.value = studentId;
-      renderRecordsTable();
     }
 
     function renderSummaryTable(summary) {
@@ -425,27 +219,25 @@
       tbody.innerHTML = '';
 
       if (summary.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">此期間無欠交記錄。</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">此期間無記錄。</td></tr>';
         return;
       }
 
       summary.forEach(item => {
         const tr = document.createElement('tr');
         tr.className = 'student-row-click';
-        tr.onclick = () => selectSingleStudent(item.studentId);
-        
-        // 確保數值有預設值，避免 undefined
-        const missingDays = item.missingDays || 0;
-        const missingDateCount = (item.missingDateCount !== undefined) ? item.missingDateCount : (item.missingDate || 0);
-        const needFixCount = item.needFixCount || 0;
+        tr.onclick = () => {
+          document.getElementById('studentSelect').value = item.studentId;
+          renderRecordsTable();
+        };
 
         tr.innerHTML = `
           <td>${item.classGroup}</td>
           <td>${item.studentId}</td>
           <td><strong>${item.studentName}</strong></td>
-          <td><span class="badge-missing">${missingDays} 天</span></td>
-          <td><span class="badge-date">${missingDateCount} 次</span></td>
-          <td><span class="badge-fix">${needFixCount} 次</span></td>
+          <td><span class="badge-missing">${item.missingDays || 0} 天</span></td>
+          <td><span class="badge-date">${item.missingDateCount || 0} 次</span></td>
+          <td><span class="badge-overdue-fix">${item.overdueFixCount || 0} 次</span></td>
         `;
         tbody.appendChild(tr);
       });
@@ -453,36 +245,29 @@
 
     function renderRecordsTable() {
       const tbody = document.getElementById('recordsTableBody');
-      const titleSpan = document.getElementById('recordsTitle');
-      const selectedStudentId = document.getElementById('studentSelect').value;
-
       tbody.innerHTML = '';
 
       let filtered = rawRecordsData;
-
+      const selectedStudentId = document.getElementById('studentSelect').value;
       if (selectedStudentId !== 'ALL') {
         filtered = filtered.filter(r => r.studentId === selectedStudentId);
-        const stObj = rawSummaryData.find(s => s.studentId === selectedStudentId);
-        const nameStr = stObj ? stObj.studentName : selectedStudentId;
-        titleSpan.innerText = `【${nameStr}】個人欠交/未改正功課跟進清單 (家長溝通版)`;
-      } else {
-        titleSpan.innerText = `學生功課未完成/欠交紀錄清單 (全部學生)`;
       }
 
-      const activeMissingRecords = filtered.filter(r => 
-        r.status === '欠交' || r.status === '要改正' || r.status === '欠改正' || r.status === '欠日期'
+      const activeRecords = filtered.filter(r => 
+        r.status === '欠交' || r.status === '欠日期' || r.status === '欠改正'
       );
 
-      if (activeMissingRecords.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#28a745; font-weight:bold;">🎉 該查詢範圍內無欠交或需改正之功課紀錄！</td></tr>';
+      if (activeRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#28a745; font-weight:bold;">🎉 無未完成或需跟進紀錄！</td></tr>';
         return;
       }
 
-      activeMissingRecords.forEach(item => {
+      activeRecords.forEach(item => {
         const tr = document.createElement('tr');
         let badgeClass = 'badge-fix';
         if (item.status === '欠交') badgeClass = 'badge-missing';
         else if (item.status === '欠日期') badgeClass = 'badge-date';
+        else if (item.status === '欠改正') badgeClass = 'badge-overdue-fix';
 
         tr.innerHTML = `
           <td>${item.date}</td>
@@ -496,7 +281,12 @@
         tbody.appendChild(tr);
       });
     }
-  </script>
 
+    function navigateToHome() {
+      const currentPath = window.location.pathname;
+      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+      window.location.replace(window.location.origin + directory + 'index.html');
+    }
+  </script>
 </body>
 </html>
