@@ -109,6 +109,7 @@
     .tutorial-link-btn { background-color: #319795; color: white; }
     .stats-link-btn { background-color: #d9480f; color: white; }
 
+    /* 頂部系統資訊列 */
     .system-info-bar {
       background-color: var(--accent-info);
       border: 1px solid var(--border-color);
@@ -127,13 +128,15 @@
       background-color: var(--primary-color);
       color: white;
       border: none;
-      padding: 4px 10px;
-      border-radius: 4px;
+      padding: 5px 12px;
+      border-radius: 6px;
       font-size: 0.85em;
       cursor: pointer;
       font-weight: bold;
-      margin-left: 8px;
+      margin-left: 10px;
+      transition: opacity 0.2s;
     }
+    .copy-sys-link-btn:hover { opacity: 0.85; }
 
     .subject-selector-box { display: flex; align-items: center; gap: 8px; }
     .subject-selector-box select {
@@ -148,10 +151,10 @@
 
     .tab-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .tab-btn {
-      padding: 10px 20px; font-size: 1.05em; font-weight: bold;
+      padding: 10px 24px; font-size: 1.1em; font-weight: bold;
       border: 2px solid var(--primary-color); background-color: var(--card-bg);
       color: var(--primary-color); border-radius: 8px; cursor: pointer; text-align: center;
-      min-width: 80px;
+      min-width: 90px;
     }
     .tab-btn.active { background-color: var(--primary-color); color: #fff; }
 
@@ -166,7 +169,7 @@
       border: 1px solid var(--border-color);
     }
 
-    .form-group { display: flex; flex-direction: column; }
+    .form-group { display: flex; flex-direction: column; position: relative; }
     .form-group.full-width { grid-column: 1 / -1; }
 
     .form-group label { font-weight: bold; margin-bottom: 6px; font-size: 0.9em; }
@@ -180,7 +183,7 @@
       width: 100%;
     }
 
-    .type-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; }
+    .type-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; min-height: 38px; }
     
     .type-badge {
       display: inline-flex; align-items: center; gap: 6px;
@@ -189,8 +192,9 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .type-badge.active { background-color: #28a745; color: #fff; border-color: #28a745; font-weight: bold; }
+    
     .type-action-btn { font-size: 0.85em; cursor: pointer; opacity: 0.75; padding: 2px 4px; border-radius: 50%; }
-    .type-action-btn:hover { opacity: 1; background: rgba(0,0,0,0.12); }
+    .type-action-btn:hover { opacity: 1; background: rgba(0,0,0,0.15); }
 
     .add-type-btn {
       padding: 6px 14px; border: 1px dashed var(--primary-color); background-color: var(--card-bg);
@@ -280,11 +284,12 @@
       </div>
     </div>
 
+    <!-- 頂部資訊列 -->
     <div class="system-info-bar">
       <div>
         🏫 學年：<strong id="displayYear">2026-2027</strong> | 
         👨‍🏫 老師代號：<strong id="displayTeacher">-</strong>
-        <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製帶有設定的專屬 Link</button>
+        <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製專屬 Link</button>
       </div>
       <div class="subject-selector-box">
         <label for="subjectSelect">📘 當前科目：</label>
@@ -307,12 +312,12 @@
         <input type="date" id="checkDate">
       </div>
       <div class="form-group">
-        <label for="questions">功課細項：</label>
-        <input type="text" id="questions" placeholder="例子：Ex3(1-5) 或 /">
+        <label for="pages">頁數：</label>
+        <input type="text" id="pages" placeholder="例：p.12-13">
       </div>
       <div class="form-group">
-        <label for="pages">頁數：</label>
-        <input type="text" id="pages" placeholder="例子：P1-4">
+        <label for="questions">題數：</label>
+        <input type="text" id="questions" placeholder="例：Q1-Q5 或 /">
       </div>
 
       <div class="form-group full-width">
@@ -371,7 +376,7 @@
   </div>
 
   <script>
-    /* 核心升級：自動解析網址帶入的連線參數 */
+    /* 自動解析網址帶入的連線參數 */
     function checkAndImportUrlParams() {
       const urlParams = new URLSearchParams(window.location.search);
       const year = urlParams.get('year');
@@ -383,13 +388,12 @@
         if (teacher) localStorage.setItem('homework_teacher_code', teacher);
         localStorage.setItem('homework_system_api_url', api);
 
-        // 清理 URL 參數保持乾淨
         window.history.replaceState({}, document.title, window.location.pathname);
         alert('🎉 已成功根據專屬 Link 自動載入連線設定！');
       }
     }
 
-    /* 產生帶有當前設定參數的專屬網址 */
+    /* 產生帶有連線參數的專屬網址 */
     function getDedicatedUrl() {
       const baseUrl = window.location.origin + window.location.pathname;
       const year = encodeURIComponent(localStorage.getItem('homework_academic_year') || '2026-2027');
@@ -456,7 +460,7 @@
     let customHomeworkTypes = [];
 
     window.onload = function() {
-      checkAndImportUrlParams(); // 先檢查網址是否有分享設定
+      checkAndImportUrlParams();
       loadPersonalizationSettings();
 
       const today = new Date().toISOString().split('T')[0];
@@ -479,10 +483,6 @@
         fetchInitialData();
       }
     };
-
-    window.addEventListener('offline', () => {
-      alert('⚠️ 目前處於離線狀態，請檢查網路連線以確保功課記錄能成功儲存！');
-    });
 
     function fetchInitialData() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
@@ -529,12 +529,13 @@
       renderClassTabs();
     }
 
+    /* 關鍵修復：依據 rawSubjectData[currentSubject] 的 Key（例如 ['4A', '5A']）精準生成班別按鈕 */
     function renderClassTabs() {
       const tabGroup = document.getElementById('classTabGroup');
       tabGroup.innerHTML = '';
 
       const classesObj = rawSubjectData[currentSubject] || {};
-      const classList = Object.keys(classesObj);
+      const classList = Object.keys(classesObj); // 取出真實班別陣列 ['4A', '5A']
 
       if (classList.length === 0) {
         tabGroup.innerHTML = '<div style="color: #888;">該科目無班別紀錄。</div>';
@@ -544,7 +545,7 @@
       classList.forEach(className => {
         const btn = document.createElement('button');
         btn.className = `tab-btn ${className === currentClass ? 'active' : ''}`;
-        btn.innerText = className;
+        btn.innerText = className; // 顯示 4A, 5A，不再顯示學號 1, 2
         btn.onclick = () => switchClass(className);
         tabGroup.appendChild(btn);
       });
@@ -592,6 +593,7 @@
         }).catch(() => {});
     }
 
+    /* 關鍵修復：取得選定班別（如 4A）下的所有學生名單並繪製 */
     function renderStudentRows() {
       const container = document.getElementById('studentContainer');
       container.innerHTML = '';
