@@ -148,13 +148,13 @@
 
     .tab-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
     .tab-btn {
-      flex: 1; min-width: 100px; padding: 12px; font-size: 1.1em; font-weight: bold;
+      padding: 10px 20px; font-size: 1.05em; font-weight: bold;
       border: 2px solid var(--primary-color); background-color: var(--card-bg);
       color: var(--primary-color); border-radius: 8px; cursor: pointer; text-align: center;
+      min-width: 80px;
     }
     .tab-btn.active { background-color: var(--primary-color); color: #fff; }
 
-    /* 表單網格佈局 */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -206,7 +206,7 @@
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
       padding: 10px 12px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
     }
-    .student-info { width: 160px; display: flex; align-items: center; gap: 8px; }
+    .student-info { min-width: 180px; display: flex; align-items: center; gap: 8px; }
     .student-name-link { font-weight: bold; font-size: 1em; color: var(--primary-color); cursor: pointer; text-decoration: underline; }
 
     .controls-wrapper { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
@@ -218,7 +218,6 @@
     .c-btn-redo.active { background-color: #17a2b8; color: #fff; }
     .c-btn-done.active { background-color: #28a745; color: #fff; font-weight: bold; }
 
-    /* 學生狀態按鈕群組 */
     .status-group { display: flex; gap: 4px; flex-wrap: wrap; }
     .status-btn { padding: 6px 10px; border: 1px solid var(--border-color); background-color: var(--accent-info); color: var(--text-color); border-radius: 4px; cursor: pointer; font-size: 0.85em; }
     .status-btn[data-status="全對"].active { background-color: #28a745; color: white; }
@@ -251,7 +250,6 @@
     .font-btn { padding: 8px 16px; border: 1px solid var(--border-color); background: var(--accent-info); color: var(--text-color); border-radius: 6px; cursor: pointer; font-weight: bold; }
     .font-btn.active { background: var(--primary-color); color: white; }
 
-    /* 響應式斷點 */
     @media (max-width: 900px) {
       .form-grid { grid-template-columns: 1fr 1fr; }
     }
@@ -286,7 +284,7 @@
       <div>
         🏫 學年：<strong id="displayYear">2026-2027</strong> | 
         👨‍🏫 老師代號：<strong id="displayTeacher">-</strong>
-        <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製系統專屬 Link</button>
+        <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製帶有設定的專屬 Link</button>
       </div>
       <div class="subject-selector-box">
         <label for="subjectSelect">📘 當前科目：</label>
@@ -347,7 +345,7 @@
     </div>
   </div>
 
-  <!-- 個人化設定 Modal (含特大字體) -->
+  <!-- 個人化設定 Modal -->
   <div class="modal-overlay" id="themeModal">
     <div class="modal-box">
       <button class="modal-close-btn" onclick="closeModal('themeModal')">✖</button>
@@ -373,30 +371,58 @@
   </div>
 
   <script>
-    /* 複製本頁系統專屬連結 */
+    /* 核心升級：自動解析網址帶入的連線參數 */
+    function checkAndImportUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const year = urlParams.get('year');
+      const teacher = urlParams.get('teacher');
+      const api = urlParams.get('api');
+
+      if (api) {
+        if (year) localStorage.setItem('homework_academic_year', year);
+        if (teacher) localStorage.setItem('homework_teacher_code', teacher);
+        localStorage.setItem('homework_system_api_url', api);
+
+        // 清理 URL 參數保持乾淨
+        window.history.replaceState({}, document.title, window.location.pathname);
+        alert('🎉 已成功根據專屬 Link 自動載入連線設定！');
+      }
+    }
+
+    /* 產生帶有當前設定參數的專屬網址 */
+    function getDedicatedUrl() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const year = encodeURIComponent(localStorage.getItem('homework_academic_year') || '2026-2027');
+      const teacher = encodeURIComponent(localStorage.getItem('homework_teacher_code') || '');
+      const api = encodeURIComponent(localStorage.getItem('homework_system_api_url') || '');
+
+      if (!localStorage.getItem('homework_system_api_url')) {
+        return baseUrl;
+      }
+
+      return `${baseUrl}?year=${year}&teacher=${teacher}&api=${api}`;
+    }
+
     function copySystemUrl() {
-      const currentUrl = window.location.href;
-      navigator.clipboard.writeText(currentUrl).then(() => {
-        alert('✅ 系統專屬 Link 已成功複製！你可以傳送到手機、平板或其他裝置使用。');
+      const dedicatedUrl = getDedicatedUrl();
+      if (!localStorage.getItem('homework_system_api_url')) {
+        alert('⚠️ 請先在「📖 建立範本與教學」中完成 Web App URL 設定，才能產生完整連線的專屬 Link！');
+        return;
+      }
+
+      navigator.clipboard.writeText(dedicatedUrl).then(() => {
+        alert('✅ 帶有連線設定的專屬 Link 已成功複製！\n你可以傳送到手機、平板或其他裝置開啟，新裝置將會自動載入設定！');
       }).catch(() => {
-        alert('請複製網址列的網址：\n' + currentUrl);
+        alert('請複製以下專屬網址：\n' + dedicatedUrl);
       });
     }
 
-    /* 個人化介面核心邏輯 */
-    function openThemeModal() {
-      document.getElementById('themeModal').style.display = 'flex';
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
+    function openThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function setTheme(themeName) {
       document.body.classList.remove('theme-green', 'theme-orange', 'theme-purple', 'theme-dark');
-      if (themeName !== 'default') {
-        document.body.classList.add(themeName);
-      }
+      if (themeName !== 'default') document.body.classList.add(themeName);
       localStorage.setItem('homework_theme', themeName);
     }
 
@@ -430,6 +456,7 @@
     let customHomeworkTypes = [];
 
     window.onload = function() {
+      checkAndImportUrlParams(); // 先檢查網址是否有分享設定
       loadPersonalizationSettings();
 
       const today = new Date().toISOString().split('T')[0];
@@ -517,12 +544,16 @@
       classList.forEach(className => {
         const btn = document.createElement('button');
         btn.className = `tab-btn ${className === currentClass ? 'active' : ''}`;
-        btn.innerText = `${className} 班`;
+        btn.innerText = className;
         btn.onclick = () => switchClass(className);
         tabGroup.appendChild(btn);
       });
 
-      switchClass(classList[0]);
+      if (!currentClass || !classList.includes(currentClass)) {
+        currentClass = classList[0];
+      }
+      
+      switchClass(currentClass);
     }
 
     function switchClass(className) {
@@ -531,7 +562,7 @@
       
       const tabGroup = document.getElementById('classTabGroup');
       tabGroup.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText === `${className} 班`);
+        btn.classList.toggle('active', btn.innerText === className);
       });
 
       draftCorrectionChanges = {}; 
