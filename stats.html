@@ -433,13 +433,19 @@
         const tr = document.createElement('tr');
         tr.className = 'student-row-click';
         tr.onclick = () => selectSingleStudent(item.studentId);
+        
+        // 確保數值有預設值，避免 undefined
+        const missingDays = item.missingDays || 0;
+        const missingDateCount = (item.missingDateCount !== undefined) ? item.missingDateCount : (item.missingDate || 0);
+        const needFixCount = item.needFixCount || 0;
+
         tr.innerHTML = `
           <td>${item.classGroup}</td>
           <td>${item.studentId}</td>
           <td><strong>${item.studentName}</strong></td>
-          <td><span class="badge-missing">${item.missingDays} 天</span></td>
-          <td><span class="badge-date">${item.missingDateCount} 次</span></td>
-          <td><span class="badge-fix">${item.needFixCount} 次</span></td>
+          <td><span class="badge-missing">${missingDays} 天</span></td>
+          <td><span class="badge-date">${missingDateCount} 次</span></td>
+          <td><span class="badge-fix">${needFixCount} 次</span></td>
         `;
         tbody.appendChild(tr);
       });
