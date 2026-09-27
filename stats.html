@@ -46,11 +46,11 @@
     .filter-card {
       background: var(--accent-info); border: 1px solid var(--border-color);
       padding: 20px; border-radius: 10px; margin-bottom: 25px;
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
     }
 
     .filter-group { display: flex; flex-direction: column; }
-    .filter-group label { font-weight: bold; margin-bottom: 6px; }
+    .filter-group label { font-weight: bold; margin-bottom: 6px; font-size:0.9em; }
     .filter-group input, .filter-group select { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); }
 
     .search-btn {
@@ -69,8 +69,11 @@
 
     .data-table th { background-color: var(--accent-info); color: var(--primary-color); }
 
-    .badge-missing { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; }
-    .badge-fix { background: #ffc107; color: black; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; }
+    .badge-missing { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
+    .badge-fix { background: #ffc107; color: black; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
+
+    .student-row-click { cursor: pointer; }
+    .student-row-click:hover { background-color: #f1f5f9; }
 
     /* 個人化 Modal */
     .modal-overlay {
@@ -89,9 +92,7 @@
       transition: all 0.2s;
     }
     .option-btn:hover { border-color: var(--primary-color); }
-    .option-btn.active {
-      border-color: var(--primary-color); background-color: var(--primary-color); color: white;
-    }
+    .option-btn.active { border-color: var(--primary-color); background-color: var(--primary-color); color: white; }
 
     .color-btn[data-theme="blue"] { border-color: #0056b3; }
     .color-btn[data-theme="orange"] { border-color: #e65100; }
@@ -129,22 +130,28 @@
       </div>
       <div class="filter-group">
         <label for="classSelect">班別：</label>
-        <select id="classSelect">
+        <select id="classSelect" onchange="filterStudentDropdown()">
           <option value="ALL">全部班別</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="studentSelect">👤 特定學生 (與家長溝通)：</label>
+        <select id="studentSelect" onchange="onStudentSelectChange()">
+          <option value="ALL">全部學生</option>
         </select>
       </div>
       <button class="search-btn" onclick="fetchStatsData()">🔍 查詢統計資料</button>
     </div>
 
-    <h2>📈 欠交總計摘要</h2>
+    <h2>📈 欠交總計摘要 (點擊學生可直接篩選明細)</h2>
     <table class="data-table">
       <thead>
         <tr>
           <th>班別</th>
           <th>學號</th>
           <th>學生姓名</th>
-          <th>欠交日數 (累計)</th>
-          <th>要改正/欠改正次數</th>
+          <th>欠交功課日數 (累計)</th>
+          <th>欠改正次數 (累計)</th>
         </tr>
       </thead>
       <tbody id="summaryTableBody">
@@ -152,15 +159,15 @@
       </tbody>
     </table>
 
-    <h2 style="margin-top:35px;">📝 明細紀錄</h2>
+    <h2 style="margin-top:35px;">📝 <span id="recordsTitle">學生功課未完成/欠交紀錄清單</span></h2>
     <table class="data-table">
       <thead>
         <tr>
-          <th>日期</th>
+          <th>派發日期</th>
           <th>科目</th>
           <th>班別</th>
-          <th>學號與姓名</th>
-          <th>功課種類與細項</th>
+          <th>學生姓名</th>
+          <th>功課項目與細項</th>
           <th>狀態</th>
         </tr>
       </thead>
@@ -170,7 +177,7 @@
     </table>
   </div>
 
-  <!-- 個人化 Modal (按鈕揀色 + 按鈕揀字體) -->
+  <!-- 個人化 Modal -->
   <div class="modal-overlay" id="themeModal">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -207,6 +214,8 @@
   <script>
     let tempSelectedTheme = 'blue';
     let tempSelectedFont = '15px';
+    let rawSummaryData = [];
+    let rawRecordsData = [];
 
     function applySavedTheme() {
       const theme = localStorage.getItem('homework_theme') || 'blue';
@@ -263,10 +272,8 @@
     function openThemeModal() {
       tempSelectedTheme = localStorage.getItem('homework_theme') || 'blue';
       tempSelectedFont = localStorage.getItem('homework_font_size') || '15px';
-      
       selectThemeBtn(tempSelectedTheme);
       selectFontBtn(tempSelectedFont);
-
       document.getElementById('themeModal').style.display = 'flex';
     }
 
@@ -331,8 +338,12 @@
         .then(res => {
           if (res.status === 'success') {
             updateFilterOptions(res.subjects || [], res.classes || []);
-            renderSummaryTable(res.summary || []);
-            renderRecordsTable(res.records || []);
+            rawSummaryData = res.summary || [];
+            rawRecordsData = res.records || [];
+
+            populateStudentDropdown();
+            renderSummaryTable(rawSummaryData);
+            renderRecordsTable();
           } else {
             alert('查詢失敗：' + res.message);
           }
@@ -366,6 +377,31 @@
       });
     }
 
+    function populateStudentDropdown() {
+      const studentSelect = document.getElementById('studentSelect');
+      const currentSelected = studentSelect.value;
+      studentSelect.innerHTML = '<option value="ALL">全部學生</option>';
+
+      // 從摘要獲取學生名單
+      rawSummaryData.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st.studentId;
+        opt.innerText = `(${st.classGroup}) (${st.studentId}) ${st.studentName}`;
+        if (st.studentId === currentSelected) opt.selected = true;
+        studentSelect.appendChild(opt);
+      });
+    }
+
+    function onStudentSelectChange() {
+      renderRecordsTable();
+    }
+
+    function selectSingleStudent(studentId) {
+      const studentSelect = document.getElementById('studentSelect');
+      studentSelect.value = studentId;
+      renderRecordsTable();
+    }
+
     function renderSummaryTable(summary) {
       const tbody = document.getElementById('summaryTableBody');
       tbody.innerHTML = '';
@@ -377,6 +413,8 @@
 
       summary.forEach(item => {
         const tr = document.createElement('tr');
+        tr.className = 'student-row-click';
+        tr.onclick = () => selectSingleStudent(item.studentId);
         tr.innerHTML = `
           <td>${item.classGroup}</td>
           <td>${item.studentId}</td>
@@ -388,24 +426,43 @@
       });
     }
 
-    function renderRecordsTable(records) {
+    function renderRecordsTable() {
       const tbody = document.getElementById('recordsTableBody');
+      const titleSpan = document.getElementById('recordsTitle');
+      const selectedStudentId = document.getElementById('studentSelect').value;
+
       tbody.innerHTML = '';
 
-      if (records.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">無明細記錄。</td></tr>';
+      let filtered = rawRecordsData;
+
+      if (selectedStudentId !== 'ALL') {
+        filtered = filtered.filter(r => r.studentId === selectedStudentId);
+        const stObj = rawSummaryData.find(s => s.studentId === selectedStudentId);
+        const nameStr = stObj ? stObj.studentName : selectedStudentId;
+        titleSpan.innerText = `【${nameStr}】個人欠交/未改正功課跟進清單 (家長溝通版)`;
+      } else {
+        titleSpan.innerText = `學生功課未完成/欠交紀錄清單 (全部學生)`;
+      }
+
+      // 篩選出未完成/欠交/需改正的紀錄
+      const activeMissingRecords = filtered.filter(r => 
+        r.status === '欠交' || r.status === '要改正' || r.status === '欠改正' || r.status === '欠日期'
+      );
+
+      if (activeMissingRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#28a745; font-weight:bold;">🎉 該查詢範圍內無欠交或需改正之功課紀錄！</td></tr>';
         return;
       }
 
-      records.forEach(item => {
+      activeMissingRecords.forEach(item => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${item.date}</td>
           <td>${item.subject}</td>
           <td>${item.classGroup}</td>
-          <td>(${item.studentId}) ${item.studentName}</td>
+          <td><strong>(${item.studentId}) ${item.studentName}</strong></td>
           <td>${item.type} - ${item.details}</td>
-          <td><strong>${item.status}</strong></td>
+          <td><span class="${item.status === '欠交' ? 'badge-missing' : 'badge-fix'}">${item.status}</span></td>
         `;
         tbody.appendChild(tr);
       });

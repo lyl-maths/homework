@@ -110,7 +110,7 @@
       padding: 12px 14px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
     }
 
-    /* 上一次紀錄嵌入卡片 (放在全對前面) */
+    /* 精簡後的上次紀錄嵌入卡片 (已隱藏日期) */
     .prev-record-box {
       display: inline-flex; align-items: center; gap: 8px; background: #fff8e1;
       border: 1px solid #ffe082; padding: 6px 12px; border-radius: 8px; font-size: 0.88em; margin-right: 10px;
@@ -221,7 +221,6 @@
       </div>
     </div>
 
-    <!-- 開始批改按鈕 -->
     <div class="start-grading-box">
       <button class="start-grading-btn" onclick="startGrading()">🔍 開始批改 (載入上一次同類功課跟進紀錄)</button>
     </div>
@@ -265,8 +264,8 @@
         <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
         <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
           <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
-          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</option>
-          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</option>
+          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
+          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
           <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
         </div>
       </div>
@@ -658,11 +657,12 @@
         studentStates[id] = '全對';
         const prevRec = pendingRecordsMap[id];
 
+        // 移除日期顯示，格式為: 📋 上次紀錄 (功課細項): 狀態
         let prevRecordHtml = '';
         if (prevRec) {
           prevRecordHtml = `
             <div class="prev-record-box">
-              <span>📋 上次紀錄 [${prevRec.issueDate}] (${prevRec.details}): <span class="prev-record-text">${prevRec.status}</span></span>
+              <span>📋 上次紀錄 (${prevRec.details}): <span class="prev-record-text">${prevRec.status}</span></span>
               <div class="fix-btn-group" id="fixGroup_${id}">
                 <button class="fix-btn" data-fix="要改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '要改正')">重改</button>
                 <button class="fix-btn" data-fix="欠改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '欠改正')">欠改</button>
