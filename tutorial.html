@@ -162,7 +162,7 @@
     <div class="template-card">
       <h2 style="margin:0; color:#234e52;">📋 步驟 1：建立 Google Sheets 試算表範本</h2>
       <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以建立專屬的「功課明細」與「欠交統計」試算表副本：</p>
-      <a href="#" id="templateCopyBtn" target="_blank" class="template-btn">
+      <a href="https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/copy" target="_blank" class="template-btn">
         📄 點此建立 Google Sheets 範本副本
       </a>
     </div>
@@ -245,15 +245,10 @@
   </div>
 
   <script>
-    // 專屬 Google Sheet 試算表連結與副本連結
     const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/edit?usp=sharing";
-    const TEMPLATE_COPY_URL = "https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/copy";
 
     window.onload = function() {
       loadPersonalizationSettings();
-
-      const copyBtn = document.getElementById('templateCopyBtn');
-      if (copyBtn) copyBtn.href = TEMPLATE_COPY_URL;
 
       document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
@@ -263,49 +258,19 @@
       updateSysUrlDisplay();
     };
 
-    function getHomePageUrl() {
-      const currentUrl = window.location.href;
-      return currentUrl.includes('tutorial.html')
-        ? currentUrl.replace('tutorial.html', 'index.html')
-        : currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'index.html';
-    }
-
+    /* 修復 1：簡單可靠地跳轉回到 index.html */
     function goToHome() {
-      window.location.href = getHomePageUrl();
+      window.location.href = 'index.html';
     }
 
-    function updateSysUrlDisplay() {
-      const indexUrl = getHomePageUrl();
-      const year = encodeURIComponent(document.getElementById('academicYearInput').value.trim() || '2026-2027');
-      const teacher = encodeURIComponent(document.getElementById('teacherCodeInput').value.trim() || '');
-      const api = encodeURIComponent(document.getElementById('apiUrlInput').value.trim());
-      const sheet = encodeURIComponent(document.getElementById('sheetUrlInput').value.trim() || DEFAULT_SHEET_URL);
-
-      if (!document.getElementById('apiUrlInput').value.trim()) {
-        document.getElementById('sysUrlDisplay').innerText = "(請先在上方填寫 Web App URL)";
-        return;
-      }
-
-      const fullDedicatedUrl = `${indexUrl}?year=${year}&teacher=${teacher}&api=${api}&sheet=${sheet}`;
-      document.getElementById('sysUrlDisplay').innerText = fullDedicatedUrl;
+    /* 修復 2：開啟與關閉個人化設定 Modal 的函數 */
+    function openThemeModal() { 
+      document.getElementById('themeModal').style.display = 'flex'; 
     }
-
-    function copySystemUrl() {
-      const displayUrl = document.getElementById('sysUrlDisplay').innerText;
-      if (displayUrl.startsWith('(')) {
-        alert('⚠️ 請先填寫 Web App URL 才能產生專屬 Link！');
-        return;
-      }
-
-      navigator.clipboard.writeText(displayUrl).then(() => {
-        alert('✅ 帶有連線設定與試算表連結的專屬 Link 已成功複製！你可以發送到手機或 iPad 開啟使用。');
-      }).catch(() => {
-        alert('請手動複製網址：\n' + displayUrl);
-      });
+    
+    function closeModal(id) { 
+      document.getElementById(id).style.display = 'none'; 
     }
-
-    function openThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     function setTheme(themeName) {
       document.body.classList.remove('theme-green', 'theme-orange', 'theme-purple', 'theme-dark');
@@ -330,6 +295,47 @@
       const savedFontSize = localStorage.getItem('homework_font_size') || 'font-medium';
       setTheme(savedTheme);
       setFontSize(savedFontSize);
+    }
+
+    function getHomePageBaseUrl() {
+      const origin = window.location.origin;
+      let pathname = window.location.pathname;
+      if (pathname.endsWith('tutorial.html')) {
+        pathname = pathname.substring(0, pathname.lastIndexOf('/') + 1) + 'index.html';
+      } else if (!pathname.endsWith('index.html')) {
+        pathname = pathname.endsWith('/') ? pathname + 'index.html' : pathname + '/index.html';
+      }
+      return origin + pathname;
+    }
+
+    function updateSysUrlDisplay() {
+      const indexUrl = getHomePageBaseUrl();
+      const year = encodeURIComponent(document.getElementById('academicYearInput').value.trim() || '2026-2027');
+      const teacher = encodeURIComponent(document.getElementById('teacherCodeInput').value.trim() || '');
+      const api = encodeURIComponent(document.getElementById('apiUrlInput').value.trim());
+      const sheet = encodeURIComponent(document.getElementById('sheetUrlInput').value.trim() || DEFAULT_SHEET_URL);
+
+      if (!document.getElementById('apiUrlInput').value.trim()) {
+        document.getElementById('sysUrlDisplay').innerText = "(請先在上方填寫 Web App URL)";
+        return;
+      }
+
+      const fullDedicatedUrl = `${indexUrl}?year=${year}&teacher=${teacher}&api=${api}&sheet=${sheet}`;
+      document.getElementById('sysUrlDisplay').innerText = fullDedicatedUrl;
+    }
+
+    function copySystemUrl() {
+      const displayUrl = document.getElementById('sysUrlDisplay').innerText;
+      if (displayUrl.startsWith('(')) {
+        alert('⚠️ 請先填寫 Web App URL 才能產生專屬 Link！');
+        return;
+      }
+
+      navigator.clipboard.writeText(displayUrl).then(() => {
+        alert('✅ 帶有連線設定與試算表連結的專屬 Link 已成功複製！');
+      }).catch(() => {
+        alert('請手動複製網址：\n' + displayUrl);
+      });
     }
 
     function saveSettings() {
