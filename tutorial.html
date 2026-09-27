@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-HANT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建立範本與部署教學 - 班級功課記錄系統</title>
+  <style>
+    /* 1. 全局 CSS 變數與主題設定 */
+    :root {
+      --primary-color: #0056b3;
+      --bg-color: #f4f7f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #cccccc;
+      --accent-info: #f0f7ff;
+      --base-font-size: 15px;
+    }
+
+    body.theme-green {
+      --primary-color: #2e7d32;
+      --bg-color: #f1f8e9;
+      --card-bg: #ffffff;
+      --text-color: #1b5e20;
+      --border-color: #c8e6c9;
+      --accent-info: #e8f5e9;
+    }
+
+    body.theme-orange {
+      --primary-color: #e65100;
+      --bg-color: #fff3e0;
+      --card-bg: #ffffff;
+      --text-color: #bf360c;
+      --border-color: #ffe0b2;
+      --accent-info: #fff8e1;
+    }
+
+    body.theme-purple {
+      --primary-color: #6a1b9a;
+      --bg-color: #f3e5f5;
+      --card-bg: #ffffff;
+      --text-color: #4a148c;
+      --border-color: #e1bee7;
+      --accent-info: #f3e5f5;
+    }
+
+    body.theme-dark {
+      --primary-color: #90caf9;
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #e0e0e0;
+      --border-color: #424242;
+      --accent-info: #2c2c2c;
+    }
+
+    /* 字體大小縮放設定 */
+    body.font-small { --base-font-size: 13px; }
+    body.font-medium { --base-font-size: 15px; }
+    body.font-large { --base-font-size: 18px; }
+    body.font-xlarge { --base-font-size: 20px; }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: var(--base-font-size);
+      margin: 0; padding: 15px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      width: 96%; max-width: 1400px; margin: 0 auto;
+      background: var(--card-bg); padding: 25px; border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); transition: background-color 0.3s;
+    }
+
+    .header-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
+    h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
+
+    .header-btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .theme-toggle-btn, .nav-btn {
+      padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9em;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .theme-toggle-btn { background-color: #6a1b9a; color: white; border: none; }
+    .nav-btn { background-color: #6c757d; color: white; border: none; }
+
+    .template-card {
+      background: #e6fffa; border: 2px dashed #319795;
+      padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center;
+    }
+
+    .template-btn {
+      display: inline-block; background-color: #319795; color: white;
+      text-decoration: none; padding: 12px 28px; border-radius: 30px;
+      font-size: 1.1em; font-weight: bold; margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(49, 151, 149, 0.3); transition: transform 0.2s, background-color 0.2s;
+    }
+    .template-btn:hover { background-color: #234e52; transform: translateY(-2px); }
+
+    .config-card {
+      background-color: var(--accent-info); border: 1px solid var(--border-color);
+      padding: 20px; border-radius: 10px; margin-bottom: 25px;
+    }
+
+    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-weight: bold; font-size: 0.9em; }
+    .form-group input {
+      padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
+      font-size: 0.95em; background: var(--card-bg); color: var(--text-color);
+    }
+
+    .save-btn {
+      background-color: var(--primary-color); color: white; border: none;
+      padding: 12px 24px; font-size: 1em; font-weight: bold; border-radius: 6px;
+      cursor: pointer; width: 100%; transition: background-color 0.2s;
+    }
+
+    .sys-link-card {
+      background-color: #e8f5e9; border: 1px solid #81c784; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;
+    }
+    .sys-link-btn {
+      background-color: #2e7d32; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 20px; cursor: pointer; margin-top: 8px;
+    }
+
+    .tutorial-section { background: var(--accent-info); border: 1px solid var(--border-color); padding: 20px; border-radius: 10px; }
+    .tutorial-section h3 { color: var(--primary-color); margin-top: 0; }
+    .tutorial-section ol { padding-left: 20px; line-height: 1.8; }
+    .highlight-code { background-color: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+
+    /* Modal 浮動視窗 */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-box {
+      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; max-width: 550px; width: 92%;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; border: 1px solid var(--border-color);
+    }
+    .modal-header { font-size: 1.2em; font-weight: bold; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+    .modal-close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.3em; cursor: pointer; border: none; background: none; color: var(--text-color); font-weight: bold; }
+
+    .theme-option-group { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .theme-circle { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    .font-size-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .font-btn { padding: 8px 16px; border: 1px solid var(--border-color); background: var(--accent-info); color: var(--text-color); border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .font-btn.active { background: var(--primary-color); color: white; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-bar">
+      <h1>📖 建立範本與部署教學</h1>
+      <div class="header-btn-group">
+        <button class="theme-toggle-btn" onclick="openThemeModal()">🎨 個人化介面</button>
+        <a href="index.html" class="nav-btn">⬅️ 返回主頁登記</a>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <h2 style="margin:0; color:#234e52;">📋 步驟 1：建立 Google Sheets 試算表範本</h2>
+      <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以複製包含「功課明細」與「欠交統計」兩大工作表的標準系統範本：</p>
+      <a href="https://docs.google.com/spreadsheets/d/1_YOUR_TEMPLATE_ID/copy" target="_blank" class="template-btn">
+        📄 點此建立 Google Sheets 範本副本
+      </a>
+    </div>
+
+    <div class="config-card">
+      <h2>🛠️ 步驟 2：系統連線與設定箱</h2>
+      <p style="font-size:0.9em;">完成 Apps Script 部署後，請將 Web App URL 與個人代號填入下方並儲存：</p>
+      
+      <div class="form-group">
+        <label for="academicYearInput">🏫 當前學年：</label>
+        <input type="text" id="academicYearInput" placeholder="例：2026-2027">
+      </div>
+
+      <div class="form-group">
+        <label for="teacherCodeInput">👨‍🏫 老師代號：</label>
+        <input type="text" id="teacherCodeInput" placeholder="例：T01、LYL">
+      </div>
+
+      <div class="form-group">
+        <label for="apiUrlInput">🔗 Google Apps Script Web App URL：</label>
+        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+
+      <button class="save-btn" onclick="saveSettings()">💾 儲存系統設定並返回主頁</button>
+
+      <!-- 系統專屬 Link 顯示區 -->
+      <div class="sys-link-card">
+        <strong>📱 你的系統專屬 Link：</strong><br>
+        <span id="sysUrlDisplay" style="font-size:0.9em; word-break:break-all; color:#1b5e20;">(尚未儲存設定)</span><br>
+        <button class="sys-link-btn" onclick="copySystemUrl()">📋 複製系統獨立 Link (發送至其他裝置)</button>
+      </div>
+    </div>
+
+    <div class="tutorial-section">
+      <h3>🚀 步驟 3：Google Apps Script 部署詳細指引</h3>
+      <ol>
+        <li>開啟複製好的 Google Sheet 試算表。</li>
+        <li>點擊上方選單列的 <strong>「擴充功能」 ➔ 「Apps Script」</strong>。</li>
+        <li>將系統提供最新的後端 JavaScript 程式碼完整貼入 <span class="highlight-code">Code.gs</span> 檔案中並儲存。</li>
+        <li>點擊右上角藍色的 <strong>「部署」 ➔ 「新增部署」</strong>。</li>
+        <li>齒輪圖示選擇 <strong>「網頁應用程式」</strong>：
+          <ul>
+            <li>執行身份：<strong>「我」</strong></li>
+            <li>誰有存取權限：<strong>「任何人」 (Anyone)</strong> <i>(極為重要！)</i></li>
+          </ul>
+        </li>
+        <li>點擊「部署」並授權存取，將複製到的 <span class="highlight-code">Web App URL</span> 貼回上方的設定箱點擊儲存即可！</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 個人化設定 Modal (含特大字體) -->
+  <div class="modal-overlay" id="themeModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="closeModal('themeModal')">✖</button>
+      <div class="modal-header">🎨 個人化介面設定</div>
+      
+      <h4>選擇主題色彩：</h4>
+      <div class="theme-option-group">
+        <div class="theme-circle" style="background:#0056b3;" onclick="setTheme('default')" title="經典藍">藍</div>
+        <div class="theme-circle" style="background:#2e7d32;" onclick="setTheme('theme-green')" title="森林綠">綠</div>
+        <div class="theme-circle" style="background:#e65100;" onclick="setTheme('theme-orange')" title="暖陽橙">橙</div>
+        <div class="theme-circle" style="background:#6a1b9a;" onclick="setTheme('theme-purple')" title="極簡紫">紫</div>
+        <div class="theme-circle" style="background:#121212;" onclick="setTheme('theme-dark')" title="暗黑模式">黑</div>
+      </div>
+
+      <h4>選擇字體大小：</h4>
+      <div class="font-size-group">
+        <button class="font-btn" id="fontSmallBtn" onclick="setFontSize('font-small')">小字體</button>
+        <button class="font-btn" id="fontMediumBtn" onclick="setFontSize('font-medium')">標準</button>
+        <button class="font-btn" id="fontLargeBtn" onclick="setFontSize('font-large')">大字體</button>
+        <button class="font-btn" id="fontXLargeBtn" onclick="setFontSize('font-xlarge')">特大字體</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+      loadPersonalizationSettings();
+
+      document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
+      document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
+      document.getElementById('apiUrlInput').value = localStorage.getItem('homework_system_api_url') || '';
+
+      updateSysUrlDisplay();
+    };
+
+    function updateSysUrlDisplay() {
+      // 取得當前網頁的主頁（index.html）完整網址
+      const indexUrl = window.location.href.replace('tutorial.html', 'index.html');
+      document.getElementById('sysUrlDisplay').innerText = indexUrl;
+    }
+
+    function copySystemUrl() {
+      const indexUrl = window.location.href.replace('tutorial.html', 'index.html');
+      navigator.clipboard.writeText(indexUrl).then(() => {
+        alert('✅ 系統專屬獨立 Link 已成功複製！你可以傳送到手機、平板或其他裝置開啟使用。');
+      }).catch(() => {
+        alert('請手動複製網址：\n' + indexUrl);
+      });
+    }
+
+    function openThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    function setTheme(themeName) {
+      document.body.classList.remove('theme-green', 'theme-orange', 'theme-purple', 'theme-dark');
+      if (themeName !== 'default') document.body.classList.add(themeName);
+      localStorage.setItem('homework_theme', themeName);
+    }
+
+    function setFontSize(sizeClass) {
+      document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
+      document.body.classList.add(sizeClass);
+      localStorage.setItem('homework_font_size', sizeClass);
+
+      document.querySelectorAll('.font-btn').forEach(btn => btn.classList.remove('active'));
+      if (sizeClass === 'font-small' && document.getElementById('fontSmallBtn')) document.getElementById('fontSmallBtn').classList.add('active');
+      if (sizeClass === 'font-medium' && document.getElementById('fontMediumBtn')) document.getElementById('fontMediumBtn').classList.add('active');
+      if (sizeClass === 'font-large' && document.getElementById('fontLargeBtn')) document.getElementById('fontLargeBtn').classList.add('active');
+      if (sizeClass === 'font-xlarge' && document.getElementById('fontXLargeBtn')) document.getElementById('fontXLargeBtn').classList.add('active');
+    }
+
+    function loadPersonalizationSettings() {
+      const savedTheme = localStorage.getItem('homework_theme') || 'default';
+      const savedFontSize = localStorage.getItem('homework_font_size') || 'font-medium';
+      setTheme(savedTheme);
+      setFontSize(savedFontSize);
+    }
+
+    function saveSettings() {
+      const year = document.getElementById('academicYearInput').value.trim() || '2026-2027';
+      const teacher = document.getElementById('teacherCodeInput').value.trim() || '無代號';
+      const url = document.getElementById('apiUrlInput').value.trim();
+
+      if (!url) {
+        alert('請先輸入有效的 Web App URL！');
+        return;
+      }
+
+      localStorage.setItem('homework_academic_year', year);
+      localStorage.setItem('homework_teacher_code', teacher);
+      localStorage.setItem('homework_system_api_url', url);
+
+      alert('✅ 設定已成功儲存！即將返回主頁。');
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>
