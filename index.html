@@ -23,6 +23,7 @@
       color: var(--text-color);
       font-size: var(--base-font-size);
       margin: 0; padding: 15px;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
@@ -41,6 +42,7 @@
       cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; color: white;
     }
 
+    .btn-theme { background-color: #6f42c1; }
     .btn-sheet { background-color: #1d6f42; }
     .btn-stats { background-color: #d9480f; }
     .btn-tutorial { background-color: #319795; }
@@ -65,6 +67,13 @@
     }
     .tab-btn.active { background-color: var(--primary-color); color: #fff; }
 
+    .pending-card {
+      background: #fff8e1; border: 1px solid #ffe082; padding: 15px; border-radius: 10px; margin-bottom: 20px;
+    }
+    .pending-row {
+      display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #ffe082;
+    }
+
     .form-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
       margin-bottom: 20px; background: var(--accent-info); padding: 20px;
@@ -74,7 +83,7 @@
     .form-group { display: flex; flex-direction: column; }
     .form-group.full-width { grid-column: 1 / -1; }
     .form-group label { font-weight: bold; margin-bottom: 6px; font-size: 0.9em; }
-    .form-group input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; }
+    .form-group input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; background: var(--card-bg); color: var(--text-color); }
 
     .type-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; min-height: 38px; }
     .type-badge {
@@ -84,7 +93,6 @@
     }
     .type-badge.active { background-color: #28a745; color: #fff; border-color: #28a745; font-weight: bold; }
     .type-action-btn { font-size: 0.85em; cursor: pointer; opacity: 0.75; padding: 2px 4px; border-radius: 50%; }
-    .type-action-btn:hover { opacity: 1; background: rgba(0,0,0,0.15); }
 
     .add-type-btn {
       padding: 6px 14px; border: 1px dashed var(--primary-color); background-color: var(--card-bg);
@@ -113,6 +121,16 @@
 
     .submit-box { margin-top: 30px; text-align: center; }
     .submit-btn { background-color: var(--primary-color); color: white; border: none; padding: 14px 40px; font-size: 1.1em; font-weight: bold; border-radius: 30px; cursor: pointer; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-box {
+      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
+    }
   </style>
 </head>
 <body>
@@ -121,6 +139,7 @@
     <div class="header-bar">
       <h1>📚 班級功課記錄系統</h1>
       <div class="header-btn-group">
+        <button class="btn-action btn-theme" onclick="openThemeModal()">🎨 個人化介面</button>
         <button class="btn-action btn-sheet" onclick="openGoogleSheet()">📊 專屬 Google Sheet</button>
         <button class="btn-action btn-stats" onclick="navigateToPage('stats.html')">📊 欠交日數統計</button>
         <button class="btn-action btn-tutorial" onclick="navigateToPage('tutorial.html')">📖 建立範本與教學</button>
@@ -136,13 +155,19 @@
       </div>
       <div>
         📘 當前科目：
-        <select id="subjectSelect" onchange="onSubjectChange()" style="padding: 6px 12px; font-weight: bold; border-radius: 6px;">
+        <select id="subjectSelect" onchange="onSubjectChange()" style="padding: 6px 12px; font-weight: bold; border-radius: 6px; background:var(--card-bg); color:var(--text-color);">
           <option value="">(載入中...)</option>
         </select>
       </div>
     </div>
 
     <div class="tab-group" id="classTabGroup"></div>
+
+    <!-- 舊功課跟進區塊 -->
+    <div class="pending-card" id="pendingCard" style="display:none;">
+      <h3 style="margin-top:0; color:#b78103;">🔍 待跟進之改正/補交項目 (過往紀錄)</h3>
+      <div id="pendingListContainer"></div>
+    </div>
 
     <h3>📝 今日新功課記錄</h3>
     <div class="form-grid">
@@ -184,7 +209,92 @@
     </div>
   </div>
 
+  <!-- 個人化設定 Modal -->
+  <div class="modal-overlay" id="themeModal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0;">🎨 個人化介面設定</h3>
+        <span onclick="closeThemeModal()" style="cursor:pointer; font-weight:bold;">✕</span>
+      </div>
+      <div class="form-group" style="margin-bottom:15px;">
+        <label for="themeSelect">選取主題風格：</label>
+        <select id="themeSelect" style="padding:8px; border-radius:6px; margin-top:5px;">
+          <option value="default">預設藍 (Default Blue)</option>
+          <option value="dark">深色模式 (Dark Mode)</option>
+          <option value="forest">森林綠 (Forest Green)</option>
+          <option value="purple">優雅紫 (Elegant Purple)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label for="fontSizeSelect">選取字型大小：</label>
+        <select id="fontSizeSelect" style="padding:8px; border-radius:6px; margin-top:5px;">
+          <option value="15px">標準 (15px)</option>
+          <option value="17px">中等 (17px)</option>
+          <option value="19px">大 (19px)</option>
+        </select>
+      </div>
+      <button onclick="saveThemeSettings()" style="width:100%; padding:10px; background:var(--primary-color); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💾 儲存並套用設定</button>
+    </div>
+  </div>
+
   <script>
+    function applySavedTheme() {
+      const theme = localStorage.getItem('homework_theme') || 'default';
+      const fontSize = localStorage.getItem('homework_font_size') || '15px';
+      const root = document.documentElement;
+
+      root.style.setProperty('--base-font-size', fontSize);
+
+      if (theme === 'dark') {
+        root.style.setProperty('--primary-color', '#4dabf7');
+        root.style.setProperty('--bg-color', '#121212');
+        root.style.setProperty('--card-bg', '#1e1e1e');
+        root.style.setProperty('--text-color', '#e0e0e0');
+        root.style.setProperty('--border-color', '#444444');
+        root.style.setProperty('--accent-info', '#2a2a2a');
+      } else if (theme === 'forest') {
+        root.style.setProperty('--primary-color', '#2e7d32');
+        root.style.setProperty('--bg-color', '#f1f8e9');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#1b5e20');
+        root.style.setProperty('--border-color', '#c8e6c9');
+        root.style.setProperty('--accent-info', '#e8f5e9');
+      } else if (theme === 'purple') {
+        root.style.setProperty('--primary-color', '#6f42c1');
+        root.style.setProperty('--bg-color', '#f3e8ff');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#3b0764');
+        root.style.setProperty('--border-color', '#d8b4fe');
+        root.style.setProperty('--accent-info', '#faf5ff');
+      } else {
+        root.style.setProperty('--primary-color', '#0056b3');
+        root.style.setProperty('--bg-color', '#f4f7f9');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#333333');
+        root.style.setProperty('--border-color', '#cccccc');
+        root.style.setProperty('--accent-info', '#f0f7ff');
+      }
+    }
+
+    function openThemeModal() {
+      document.getElementById('themeSelect').value = localStorage.getItem('homework_theme') || 'default';
+      document.getElementById('fontSizeSelect').value = localStorage.getItem('homework_font_size') || '15px';
+      document.getElementById('themeModal').style.display = 'flex';
+    }
+
+    function closeThemeModal() {
+      document.getElementById('themeModal').style.display = 'none';
+    }
+
+    function saveThemeSettings() {
+      const theme = document.getElementById('themeSelect').value;
+      const fontSize = document.getElementById('fontSizeSelect').value;
+      localStorage.setItem('homework_theme', theme);
+      localStorage.setItem('homework_font_size', fontSize);
+      applySavedTheme();
+      closeThemeModal();
+    }
+
     function navigateToPage(targetPage) {
       const currentPath = window.location.pathname;
       const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
@@ -325,8 +435,10 @@
     let currentSubject = '';
     let currentClass = '';
     let studentStates = {};
+    let correctionUpdates = {}; // 儲存舊功課跟進狀態變更 { rowIndex: newStatus }
 
     window.onload = function() {
+      applySavedTheme();
       checkAndImportUrlParams();
 
       document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
@@ -421,6 +533,62 @@
       });
 
       renderStudentRows();
+      fetchPendingCorrections(); // 載入該班別過往待改正/補交項目
+    }
+
+    /* 獲取待跟進的舊功課列表 */
+    function fetchPendingCorrections() {
+      const apiUrl = localStorage.getItem('homework_system_api_url');
+      if (!apiUrl || !currentSubject || !currentClass) return;
+
+      fetch(`${apiUrl}?action=getPendingCorrections&subject=${encodeURIComponent(currentSubject)}&classGroup=${encodeURIComponent(currentClass)}`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'success') {
+            renderPendingCard(res.data || []);
+          }
+        });
+    }
+
+    function renderPendingCard(pendingList) {
+      const card = document.getElementById('pendingCard');
+      const container = document.getElementById('pendingListContainer');
+      container.innerHTML = '';
+      correctionUpdates = {};
+
+      if (pendingList.length === 0) {
+        card.style.display = 'none';
+        return;
+      }
+
+      card.style.display = 'block';
+
+      pendingList.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'pending-row';
+        row.innerHTML = `
+          <div>
+            <strong>(${item.studentId}) ${item.studentName}</strong> 
+            <span style="color:#666; font-size:0.9em;">[${item.issueDate}] ${item.type} - ${item.details}</span> 
+            <span style="color:#d9534f; font-weight:bold;">(原狀態: ${item.status})</span>
+          </div>
+          <select onchange="onPendingStatusChange(${item.rowIndex}, this.value)" style="padding:4px 8px; border-radius:4px;">
+            <option value="">-- 跟進狀態 --</option>
+            <option value="已完成改正">已完成改正</option>
+            <option value="已補交">已補交</option>
+            <option value="欠改正">繼續欠改正</option>
+          </select>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function onPendingStatusChange(rowIndex, newStatus) {
+      if (newStatus) {
+        correctionUpdates[rowIndex] = newStatus;
+      } else {
+        delete correctionUpdates[rowIndex];
+      }
     }
 
     function renderStudentRows() {
@@ -474,6 +642,11 @@
       if (!apiUrl) { alert('請先設定 API URL！'); return; }
       if (!selectedType) { alert('請先新增並選擇功課種類！'); return; }
 
+      const correctionsArray = Object.keys(correctionUpdates).map(rIndex => ({
+        rowIndex: parseInt(rIndex),
+        newStatus: correctionUpdates[rIndex]
+      }));
+
       const payload = {
         action: 'saveHomework',
         payload: {
@@ -483,15 +656,24 @@
           classGroup: currentClass,
           issueDate: document.getElementById('issueDate').value,
           checkDate: document.getElementById('checkDate').value,
-          type: selectedType,
+          type: selectedType, // 功課種類
           pages: document.getElementById('pages').value,
           questions: document.getElementById('questions').value,
-          students: Object.keys(studentStates).map(id => ({ id: id, status: studentStates[id] }))
+          students: Object.keys(studentStates).map(id => {
+            const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
+            const stObj = list.find(s => (typeof s === 'object' ? s.id : s) == id);
+            const stName = typeof stObj === 'object' ? stObj.name : stObj;
+            return { id: id, name: stName, status: studentStates[id] };
+          }),
+          corrections: correctionsArray // 舊功課改正更新列表
         }
       };
 
       fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-        .then(() => alert('✅ 功課記錄已成功儲存！'));
+        .then(() => {
+          alert('✅ 功課記錄與改正跟進已成功儲存！');
+          fetchPendingCorrections(); // 重新整理跟進卡片
+        });
     }
   </script>
 </body>

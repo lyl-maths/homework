@@ -23,6 +23,7 @@
       color: var(--text-color);
       font-size: var(--base-font-size);
       margin: 0; padding: 15px;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
@@ -34,10 +35,13 @@
     .header-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
     h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
 
+    .nav-btn-group { display: flex; gap: 8px; }
+
     .nav-btn {
       padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9em;
       cursor: pointer; text-decoration: none; background-color: #6c757d; color: white; border: none;
     }
+    .btn-theme { background-color: #6f42c1; }
 
     .template-card {
       background: #e6fffa; border: 2px dashed #319795;
@@ -80,6 +84,18 @@
     .tutorial-section h3 { color: var(--primary-color); margin-top: 0; }
     .tutorial-section ol { padding-left: 20px; line-height: 1.8; }
     .highlight-code { background-color: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+
+    /* 個人化 Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-box {
+      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .modal-close { cursor: pointer; font-size: 1.2em; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -87,7 +103,10 @@
   <div class="container">
     <div class="header-bar">
       <h1>📖 建立範本與部署教學</h1>
-      <button class="nav-btn" onclick="navigateToHome()">⬅️ 返回主頁登記</button>
+      <div class="nav-btn-group">
+        <button class="nav-btn btn-theme" onclick="openThemeModal()">🎨 個人化介面</button>
+        <button class="nav-btn" onclick="navigateToHome()">⬅️ 返回主頁登記</button>
+      </div>
     </div>
 
     <div class="template-card">
@@ -144,8 +163,94 @@
     </div>
   </div>
 
+  <!-- 個人化設定彈窗 -->
+  <div class="modal-overlay" id="themeModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="margin:0;">🎨 個人化介面設定</h3>
+        <span class="modal-close" onclick="closeThemeModal()">✕</span>
+      </div>
+      <div class="form-group" style="margin-bottom:15px;">
+        <label for="themeSelect">選取主題風格：</label>
+        <select id="themeSelect" style="padding:8px; border-radius:6px; margin-top:5px;">
+          <option value="default">預設藍 (Default Blue)</option>
+          <option value="dark">深色模式 (Dark Mode)</option>
+          <option value="forest">森林綠 (Forest Green)</option>
+          <option value="purple">優雅紫 (Elegant Purple)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:20px;">
+        <label for="fontSizeSelect">選取字型大小：</label>
+        <select id="fontSizeSelect" style="padding:8px; border-radius:6px; margin-top:5px;">
+          <option value="15px">標準 (15px)</option>
+          <option value="17px">中等 (17px)</option>
+          <option value="19px">大 (19px)</option>
+        </select>
+      </div>
+      <button onclick="saveThemeSettings()" style="width:100%; padding:10px; background:var(--primary-color); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💾 儲存並套用設定</button>
+    </div>
+  </div>
+
   <script>
+    function applySavedTheme() {
+      const theme = localStorage.getItem('homework_theme') || 'default';
+      const fontSize = localStorage.getItem('homework_font_size') || '15px';
+      const root = document.documentElement;
+
+      root.style.setProperty('--base-font-size', fontSize);
+
+      if (theme === 'dark') {
+        root.style.setProperty('--primary-color', '#4dabf7');
+        root.style.setProperty('--bg-color', '#121212');
+        root.style.setProperty('--card-bg', '#1e1e1e');
+        root.style.setProperty('--text-color', '#e0e0e0');
+        root.style.setProperty('--border-color', '#444444');
+        root.style.setProperty('--accent-info', '#2a2a2a');
+      } else if (theme === 'forest') {
+        root.style.setProperty('--primary-color', '#2e7d32');
+        root.style.setProperty('--bg-color', '#f1f8e9');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#1b5e20');
+        root.style.setProperty('--border-color', '#c8e6c9');
+        root.style.setProperty('--accent-info', '#e8f5e9');
+      } else if (theme === 'purple') {
+        root.style.setProperty('--primary-color', '#6f42c1');
+        root.style.setProperty('--bg-color', '#f3e8ff');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#3b0764');
+        root.style.setProperty('--border-color', '#d8b4fe');
+        root.style.setProperty('--accent-info', '#faf5ff');
+      } else {
+        root.style.setProperty('--primary-color', '#0056b3');
+        root.style.setProperty('--bg-color', '#f4f7f9');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#333333');
+        root.style.setProperty('--border-color', '#cccccc');
+        root.style.setProperty('--accent-info', '#f0f7ff');
+      }
+    }
+
+    function openThemeModal() {
+      document.getElementById('themeSelect').value = localStorage.getItem('homework_theme') || 'default';
+      document.getElementById('fontSizeSelect').value = localStorage.getItem('homework_font_size') || '15px';
+      document.getElementById('themeModal').style.display = 'flex';
+    }
+
+    function closeThemeModal() {
+      document.getElementById('themeModal').style.display = 'none';
+    }
+
+    function saveThemeSettings() {
+      const theme = document.getElementById('themeSelect').value;
+      const fontSize = document.getElementById('fontSizeSelect').value;
+      localStorage.setItem('homework_theme', theme);
+      localStorage.setItem('homework_font_size', fontSize);
+      applySavedTheme();
+      closeThemeModal();
+    }
+
     window.onload = function() {
+      applySavedTheme();
       document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
       document.getElementById('apiUrlInput').value = localStorage.getItem('homework_system_api_url') || '';
