@@ -93,7 +93,7 @@
 
     .header-btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
 
-    .theme-toggle-btn, .tutorial-link-btn, .stats-link-btn {
+    .theme-toggle-btn, .tutorial-link-btn, .stats-link-btn, .reset-sys-btn {
       padding: 8px 14px;
       border-radius: 6px;
       font-weight: bold;
@@ -108,6 +108,7 @@
     .theme-toggle-btn { background-color: #6a1b9a; color: white; border: none; }
     .tutorial-link-btn { background-color: #319795; color: white; }
     .stats-link-btn { background-color: #d9480f; color: white; }
+    .reset-sys-btn { background-color: #dc3545; color: white; border: none; }
 
     /* 頂部系統資訊列 */
     .system-info-bar {
@@ -281,6 +282,7 @@
         <button class="theme-toggle-btn" onclick="openThemeModal()">🎨 個人化介面</button>
         <a href="stats.html" class="stats-link-btn">📊 欠交日數統計</a>
         <a href="tutorial.html" class="tutorial-link-btn">📖 建立範本與教學</a>
+        <button class="reset-sys-btn" onclick="resetSystem()">🔄 重置系統</button>
       </div>
     </div>
 
@@ -376,6 +378,15 @@
   </div>
 
   <script>
+    /* 一鍵重置 Web 系統快取功能 */
+    function resetSystem() {
+      if (confirm('⚠️ 確定要重置系統嗎？\n這將會清除此裝置上儲存的 API 連結、老師代號及本地快取設定。')) {
+        localStorage.clear();
+        alert('🧹 系統設定已成功重置！即將重新整理網頁。');
+        window.location.href = window.location.pathname; // 清理 URL 參數並刷新
+      }
+    }
+
     /* 自動解析網址帶入的連線參數 */
     function checkAndImportUrlParams() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -484,6 +495,40 @@
       }
     };
 
+    /* 關鍵自動修正：將 Apps Script 資料結構自動轉換為以「班別」(如 4A) 為 Key 的結構 */
+    function normalizeData(fetchedData) {
+      const normalized = {};
+
+      Object.keys(fetchedData).forEach(subject => {
+        normalized[subject] = {};
+        const subjectObj = fetchedData[subject];
+
+        // 檢查 Key 是否為數字（即舊結構將學號設為了 Key）
+        const keys = Object.keys(subjectObj);
+        const isLegacyFormat = keys.length > 0 && !isNaN(keys[0]);
+
+        if (isLegacyFormat) {
+          // 自動從舊格式轉譯：按 classGroup（班別）重新分類學生
+          keys.forEach(k => {
+            const studentArr = Array.isArray(subjectObj[k]) ? subjectObj[k] : [subjectObj[k]];
+            studentArr.forEach(st => {
+              const cls = st.classGroup || st.class || '4A'; // 預設降級相容
+              if (!normalized[subject][cls]) normalized[subject][cls] = [];
+              normalized[subject][cls].push({
+                id: st.id || k,
+                name: st.name
+              });
+            });
+          });
+        } else {
+          // 標準新格式直接賦值
+          normalized[subject] = subjectObj;
+        }
+      });
+
+      return normalized;
+    }
+
     function fetchInitialData() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
       if (!apiUrl) return;
@@ -492,7 +537,7 @@
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            rawSubjectData = res.data || {};
+            rawSubjectData = normalizeData(res.data || {});
             renderSubjectSelect();
           }
         })
@@ -529,7 +574,6 @@
       renderClassTabs();
     }
 
-    /* 關鍵修復：依據 rawSubjectData[currentSubject] 的 Key（例如 ['4A', '5A']）精準生成班別按鈕 */
     function renderClassTabs() {
       const tabGroup = document.getElementById('classTabGroup');
       tabGroup.innerHTML = '';
@@ -545,7 +589,7 @@
       classList.forEach(className => {
         const btn = document.createElement('button');
         btn.className = `tab-btn ${className === currentClass ? 'active' : ''}`;
-        btn.innerText = className; // 顯示 4A, 5A，不再顯示學號 1, 2
+        btn.innerText = className; // 顯示 4A, 5A
         btn.onclick = () => switchClass(className);
         tabGroup.appendChild(btn);
       });
@@ -593,7 +637,6 @@
         }).catch(() => {});
     }
 
-    /* 關鍵修復：取得選定班別（如 4A）下的所有學生名單並繪製 */
     function renderStudentRows() {
       const container = document.getElementById('studentContainer');
       container.innerHTML = '';
