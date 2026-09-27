@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>班級功課記錄系統</title>
+  <title>建立範本與部署教學 - 班級功課記錄系統</title>
   <style>
-    /* 1. 全局 CSS 變數與主題 */
     :root {
       --primary-color: #0056b3;
       --bg-color: #f4f7f9;
@@ -16,48 +15,6 @@
       --base-font-size: 15px;
     }
 
-    body.theme-green {
-      --primary-color: #2e7d32;
-      --bg-color: #f1f8e9;
-      --card-bg: #ffffff;
-      --text-color: #1b5e20;
-      --border-color: #c8e6c9;
-      --accent-info: #e8f5e9;
-    }
-
-    body.theme-orange {
-      --primary-color: #e65100;
-      --bg-color: #fff3e0;
-      --card-bg: #ffffff;
-      --text-color: #bf360c;
-      --border-color: #ffe0b2;
-      --accent-info: #fff8e1;
-    }
-
-    body.theme-purple {
-      --primary-color: #6a1b9a;
-      --bg-color: #f3e5f5;
-      --card-bg: #ffffff;
-      --text-color: #4a148c;
-      --border-color: #e1bee7;
-      --accent-info: #f3e5f5;
-    }
-
-    body.theme-dark {
-      --primary-color: #90caf9;
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --text-color: #e0e0e0;
-      --border-color: #424242;
-      --accent-info: #2c2c2c;
-    }
-
-    /* 字體大小縮放設定 */
-    body.font-small { --base-font-size: 13px; }
-    body.font-medium { --base-font-size: 15px; }
-    body.font-large { --base-font-size: 18px; }
-    body.font-xlarge { --base-font-size: 20px; }
-
     * { box-sizing: border-box; }
 
     body {
@@ -66,210 +23,56 @@
       color: var(--text-color);
       font-size: var(--base-font-size);
       margin: 0; padding: 15px;
-      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
-      width: 96%;
-      max-width: 1400px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      padding: 25px;
-      border-radius: 12px;
+      width: 96%; max-width: 1400px; margin: 0 auto;
+      background: var(--card-bg); padding: 25px; border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      transition: background-color 0.3s;
     }
 
-    .header-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
+    .header-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
     h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
 
-    .header-btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
-
-    .theme-toggle-btn, .tutorial-link-btn, .stats-link-btn, .reset-sys-btn {
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 0.9em;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    .nav-btn {
+      padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9em;
+      cursor: pointer; text-decoration: none; background-color: #6c757d; color: white; border: none;
     }
 
-    .theme-toggle-btn { background-color: #6a1b9a; color: white; border: none; }
-    .tutorial-link-btn { background-color: #319795; color: white; }
-    .stats-link-btn { background-color: #d9480f; color: white; }
-    .reset-sys-btn { background-color: #dc3545; color: white; border: none; }
-
-    /* 頂部系統資訊列 */
-    .system-info-bar {
-      background-color: var(--accent-info);
-      border: 1px solid var(--border-color);
-      padding: 12px 18px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.95em;
+    .template-card {
+      background: #e6fffa; border: 2px dashed #319795;
+      padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center;
     }
 
-    .copy-sys-link-btn {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 0.85em;
-      cursor: pointer;
-      font-weight: bold;
-      margin-left: 10px;
-      transition: opacity 0.2s;
-    }
-    .copy-sys-link-btn:hover { opacity: 0.85; }
-
-    .subject-selector-box { display: flex; align-items: center; gap: 8px; }
-    .subject-selector-box select {
-      padding: 6px 12px;
-      font-size: 1em;
-      font-weight: bold;
-      color: var(--primary-color);
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background: var(--card-bg);
+    .template-btn {
+      display: inline-block; background-color: #319795; color: white;
+      text-decoration: none; padding: 12px 28px; border-radius: 30px;
+      font-size: 1.1em; font-weight: bold; margin-top: 10px;
     }
 
-    .tab-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-btn {
-      padding: 10px 24px; font-size: 1.1em; font-weight: bold;
-      border: 2px solid var(--primary-color); background-color: var(--card-bg);
-      color: var(--primary-color); border-radius: 8px; cursor: pointer; text-align: center;
-      min-width: 90px;
-    }
-    .tab-btn.active { background-color: var(--primary-color); color: #fff; }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin-bottom: 20px;
-      background: var(--accent-info);
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
+    .config-card {
+      background-color: var(--accent-info); border: 1px solid var(--border-color);
+      padding: 20px; border-radius: 10px; margin-bottom: 25px;
     }
 
-    .form-group { display: flex; flex-direction: column; position: relative; }
-    .form-group.full-width { grid-column: 1 / -1; }
-
-    .form-group label { font-weight: bold; margin-bottom: 6px; font-size: 0.9em; }
+    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-weight: bold; font-size: 0.9em; }
     .form-group input {
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.95em;
-      background: var(--card-bg);
-      color: var(--text-color);
-      width: 100%;
+      padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
+      font-size: 0.95em; background: var(--card-bg); color: var(--text-color);
     }
 
-    .type-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; min-height: 38px; }
-    
-    .type-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border: 1px solid var(--border-color); background-color: var(--card-bg);
-      border-radius: 20px; font-size: 0.9em; cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .type-badge.active { background-color: #28a745; color: #fff; border-color: #28a745; font-weight: bold; }
-    
-    .type-action-btn { font-size: 0.85em; cursor: pointer; opacity: 0.75; padding: 2px 4px; border-radius: 50%; }
-    .type-action-btn:hover { opacity: 1; background: rgba(0,0,0,0.15); }
-
-    .add-type-btn {
-      padding: 6px 14px; border: 1px dashed var(--primary-color); background-color: var(--card-bg);
-      color: var(--primary-color); border-radius: 20px; cursor: pointer; font-size: 0.85em; font-weight: bold;
+    .save-btn {
+      background-color: var(--primary-color); color: white; border: none;
+      padding: 12px 24px; font-size: 1em; font-weight: bold; border-radius: 6px;
+      cursor: pointer; width: 100%; transition: background-color 0.2s;
     }
 
-    .student-list-header {
-      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
-      margin-top: 25px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color);
+    .sys-link-card {
+      background-color: #e8f5e9; border: 1px solid #81c784; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;
     }
-
-    .student-row {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
-      padding: 10px 12px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
-    }
-    .student-info { min-width: 180px; display: flex; align-items: center; gap: 8px; }
-    .student-name-link { font-weight: bold; font-size: 1em; color: var(--primary-color); cursor: pointer; text-decoration: underline; }
-
-    .controls-wrapper { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-    .correction-box-inline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background-color: #fffde7; border: 1px solid #ffe082; padding: 4px 8px; border-radius: 6px; font-size: 0.8em; color: #333; }
-    .correction-label { color: #b78103; font-weight: bold; white-space: nowrap; }
-    .c-btn-group { display: flex; gap: 3px; }
-    .c-btn { padding: 3px 6px; font-size: 0.8em; border-radius: 3px; border: 1px solid #ccc; cursor: pointer; background: #fff; color: #333; }
-    .c-btn-missing.active { background-color: #fd7e14; color: #fff; }
-    .c-btn-redo.active { background-color: #17a2b8; color: #fff; }
-    .c-btn-done.active { background-color: #28a745; color: #fff; font-weight: bold; }
-
-    .status-group { display: flex; gap: 4px; flex-wrap: wrap; }
-    .status-btn { padding: 6px 10px; border: 1px solid var(--border-color); background-color: var(--accent-info); color: var(--text-color); border-radius: 4px; cursor: pointer; font-size: 0.85em; }
-    .status-btn[data-status="全對"].active { background-color: #28a745; color: white; }
-    .status-btn[data-status="欠日期"].active { background-color: #d97706; color: white; font-weight: bold; }
-    .status-btn[data-status="要改正"].active { background-color: #ffc107; color: black; }
-    .status-btn[data-status="欠交"].active { background-color: #dc3545; color: white; }
-    .status-btn[data-status="缺席"].active { background-color: #6c757d; color: white; }
-    .status-btn[data-status="申請延期"].active { background-color: #6f42c1; color: white; }
-
-    .submit-box { margin-top: 30px; text-align: center; }
-    .submit-btn { background-color: var(--primary-color); color: white; border: none; padding: 14px 40px; font-size: 1.1em; font-weight: bold; border-radius: 30px; cursor: pointer; }
-
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; z-index: 1000;
-    }
-    .modal-box {
-      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; max-width: 550px; width: 92%;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; border: 1px solid var(--border-color);
-    }
-    .modal-header { font-size: 1.2em; font-weight: bold; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
-    .modal-close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.3em; cursor: pointer; border: none; background: none; color: var(--text-color); font-weight: bold; }
-
-    .theme-option-group { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-    .theme-circle {
-      width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;
-    }
-    .font-size-group { display: flex; gap: 10px; flex-wrap: wrap; }
-    .font-btn { padding: 8px 16px; border: 1px solid var(--border-color); background: var(--accent-info); color: var(--text-color); border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .font-btn.active { background: var(--primary-color); color: white; }
-
-    @media (max-width: 900px) {
-      .form-grid { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 600px) {
-      body { padding: 8px; }
-      .container { width: 100%; padding: 12px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .header-bar { flex-direction: column; align-items: flex-start; }
-      .header-btn-group { width: 100%; justify-content: space-between; }
-      .header-btn-group > * { flex: 1; text-align: center; }
-      .student-row { flex-direction: column; align-items: flex-start; }
-      .controls-wrapper { width: 100%; justify-content: space-between; margin-top: 5px; }
-      .status-group { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-      .status-btn { padding: 8px 2px; text-align: center; font-size: 0.8em; }
+    .sys-link-btn {
+      background-color: #2e7d32; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 20px; cursor: pointer; margin-top: 8px;
     }
   </style>
 </head>
@@ -277,616 +80,110 @@
 
   <div class="container">
     <div class="header-bar">
-      <h1>📚 班級功課記錄系統</h1>
-      <div class="header-btn-group">
-        <button class="theme-toggle-btn" onclick="openThemeModal()">🎨 個人化介面</button>
-        <a href="stats.html" class="stats-link-btn">📊 欠交日數統計</a>
-        <a href="tutorial.html" class="tutorial-link-btn">📖 建立範本與教學</a>
-        <button class="reset-sys-btn" onclick="resetSystem()">🔄 重置系統</button>
-      </div>
+      <h1>📖 建立範本與部署教學</h1>
+      <button class="nav-btn" onclick="goToHome()">⬅️ 返回主頁登記</button>
     </div>
 
-    <!-- 頂部資訊列 -->
-    <div class="system-info-bar">
-      <div>
-        🏫 學年：<strong id="displayYear">2026-2027</strong> | 
-        👨‍🏫 老師代號：<strong id="displayTeacher">-</strong>
-        <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製專屬 Link</button>
-      </div>
-      <div class="subject-selector-box">
-        <label for="subjectSelect">📘 當前科目：</label>
-        <select id="subjectSelect" onchange="onSubjectChange()">
-          <option value="">(載入中...)</option>
-        </select>
-      </div>
+    <div class="template-card">
+      <h2 style="margin:0; color:#234e52;">📋 步驟 1：建立 Google Sheets 試算表範本</h2>
+      <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以複製包含「功課明細」與「欠交統計」兩大工作表的標準系統範本：</p>
+      <a href="https://docs.google.com/spreadsheets/d/1_YOUR_TEMPLATE_ID/copy" target="_blank" class="template-btn">
+        📄 點此建立 Google Sheets 範本副本
+      </a>
     </div>
 
-    <div class="tab-group" id="classTabGroup"></div>
-
-    <h3>📝 今日新功課記錄</h3>
-    <div class="form-grid">
-      <div class="form-group">
-        <label for="issueDate">派發日期：</label>
-        <input type="date" id="issueDate">
-      </div>
-      <div class="form-group">
-        <label for="checkDate">批改日期：</label>
-        <input type="date" id="checkDate">
-      </div>
-      <div class="form-group">
-        <label for="pages">頁數：</label>
-        <input type="text" id="pages" placeholder="例：p.12-13">
-      </div>
-      <div class="form-group">
-        <label for="questions">題數：</label>
-        <input type="text" id="questions" placeholder="例：Q1-Q5 或 /">
-      </div>
-
-      <div class="form-group full-width">
-        <label>功課種類 (點擊選擇，小筆圖示可修改，❌ 可刪除)：</label>
-        <div class="type-buttons" id="typeButtons"></div>
-      </div>
-    </div>
-
-    <div class="student-list-header">
-      <h3>學生提交狀態 (當前科目：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 班別：<span id="currentClassText">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
-      <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-        <button onclick="fetchInitialData()" style="padding: 4px 8px; cursor: pointer;">🔄 重新整理名單</button>
-        <button onclick="setAllStatus('全對')" style="padding: 4px 8px; cursor: pointer;">全部設為「全對」</button>
-      </div>
-    </div>
-
-    <div id="studentContainer"></div>
-
-    <div class="submit-box">
-      <button class="submit-btn" id="submitBtn" onclick="submitHomework()">儲存新功課至 Google Sheets</button>
-    </div>
-  </div>
-
-  <!-- 學生欠改細項 Modal -->
-  <div class="modal-overlay" id="studentModal">
-    <div class="modal-box">
-      <button class="modal-close-btn" onclick="closeModal('studentModal')">✖</button>
-      <div class="modal-header" id="modalTitle">學生欠改／欠交功課細項</div>
-      <div id="modalContent"></div>
-    </div>
-  </div>
-
-  <!-- 個人化設定 Modal -->
-  <div class="modal-overlay" id="themeModal">
-    <div class="modal-box">
-      <button class="modal-close-btn" onclick="closeModal('themeModal')">✖</button>
-      <div class="modal-header">🎨 個人化介面設定</div>
+    <div class="config-card">
+      <h2>🛠️ 步驟 2：系統連線與設定箱</h2>
       
-      <h4>選擇主題色彩：</h4>
-      <div class="theme-option-group">
-        <div class="theme-circle" style="background:#0056b3;" onclick="setTheme('default')" title="經典藍">藍</div>
-        <div class="theme-circle" style="background:#2e7d32;" onclick="setTheme('theme-green')" title="森林綠">綠</div>
-        <div class="theme-circle" style="background:#e65100;" onclick="setTheme('theme-orange')" title="暖陽橙">橙</div>
-        <div class="theme-circle" style="background:#6a1b9a;" onclick="setTheme('theme-purple')" title="極簡紫">紫</div>
-        <div class="theme-circle" style="background:#121212;" onclick="setTheme('theme-dark')" title="暗黑模式">黑</div>
+      <div class="form-group">
+        <label for="academicYearInput">🏫 當前學年：</label>
+        <input type="text" id="academicYearInput" placeholder="例：2026-2027" oninput="updateSysUrlDisplay()">
       </div>
 
-      <h4>選擇字體大小：</h4>
-      <div class="font-size-group">
-        <button class="font-btn" id="fontSmallBtn" onclick="setFontSize('font-small')">小字體</button>
-        <button class="font-btn" id="fontMediumBtn" onclick="setFontSize('font-medium')">標準</button>
-        <button class="font-btn" id="fontLargeBtn" onclick="setFontSize('font-large')">大字體</button>
-        <button class="font-btn" id="fontXLargeBtn" onclick="setFontSize('font-xlarge')">特大字體</button>
+      <div class="form-group">
+        <label for="teacherCodeInput">👨‍🏫 老師代號：</label>
+        <input type="text" id="teacherCodeInput" placeholder="例：T01、LYL" oninput="updateSysUrlDisplay()">
+      </div>
+
+      <div class="form-group">
+        <label for="apiUrlInput">🔗 Google Apps Script Web App URL：</label>
+        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" oninput="updateSysUrlDisplay()">
+      </div>
+
+      <div class="form-group">
+        <label for="sheetUrlInput">📊 專屬 Google Sheet 試算表網址 (供快捷開啟)：</label>
+        <input type="text" id="sheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/..." oninput="updateSysUrlDisplay()">
+      </div>
+
+      <button class="save-btn" onclick="saveSettings()">💾 儲存系統設定並返回主頁</button>
+
+      <div class="sys-link-card">
+        <strong>📱 你的系統連線專屬 Link (可跨裝置開啟自動載入設定)：</strong><br>
+        <span id="sysUrlDisplay" style="font-size:0.85em; word-break:break-all; color:#1b5e20;">(請先填寫上方 Web App URL)</span><br>
+        <button class="sys-link-btn" onclick="copySystemUrl()">📋 複製帶有連線設定的專屬 Link</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* 一鍵重置 Web 系統快取功能 */
-    function resetSystem() {
-      if (confirm('⚠️ 確定要重置系統嗎？\n這將會清除此裝置上儲存的 API 連結、老師代號及本地快取設定。')) {
-        localStorage.clear();
-        alert('🧹 系統設定已成功重置！即將重新整理網頁。');
-        window.location.href = window.location.pathname; // 清理 URL 參數並刷新
-      }
+    window.onload = function() {
+      document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
+      document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
+      document.getElementById('apiUrlInput').value = localStorage.getItem('homework_system_api_url') || '';
+      document.getElementById('sheetUrlInput').value = localStorage.getItem('homework_sheet_url') || '';
+      updateSysUrlDisplay();
+    };
+
+    function getHomePageUrl() {
+      const currentUrl = window.location.href;
+      return currentUrl.includes('tutorial.html') 
+        ? currentUrl.replace('tutorial.html', 'index.html')
+        : currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'index.html';
     }
 
-    /* 自動解析網址帶入的連線參數 */
-    function checkAndImportUrlParams() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const year = urlParams.get('year');
-      const teacher = urlParams.get('teacher');
-      const api = urlParams.get('api');
+    function goToHome() { window.location.href = getHomePageUrl(); }
 
-      if (api) {
-        if (year) localStorage.setItem('homework_academic_year', year);
-        if (teacher) localStorage.setItem('homework_teacher_code', teacher);
-        localStorage.setItem('homework_system_api_url', api);
+    function updateSysUrlDisplay() {
+      const indexUrl = getHomePageUrl();
+      const year = encodeURIComponent(document.getElementById('academicYearInput').value.trim() || '2026-2027');
+      const teacher = encodeURIComponent(document.getElementById('teacherCodeInput').value.trim() || '');
+      const api = encodeURIComponent(document.getElementById('apiUrlInput').value.trim());
+      const sheet = encodeURIComponent(document.getElementById('sheetUrlInput').value.trim());
 
-        window.history.replaceState({}, document.title, window.location.pathname);
-        alert('🎉 已成功根據專屬 Link 自動載入連線設定！');
-      }
-    }
-
-    /* 產生帶有連線參數的專屬網址 */
-    function getDedicatedUrl() {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const year = encodeURIComponent(localStorage.getItem('homework_academic_year') || '2026-2027');
-      const teacher = encodeURIComponent(localStorage.getItem('homework_teacher_code') || '');
-      const api = encodeURIComponent(localStorage.getItem('homework_system_api_url') || '');
-
-      if (!localStorage.getItem('homework_system_api_url')) {
-        return baseUrl;
+      if (!document.getElementById('apiUrlInput').value.trim()) {
+        document.getElementById('sysUrlDisplay').innerText = "(請先在上方填寫 Web App URL)";
+        return;
       }
 
-      return `${baseUrl}?year=${year}&teacher=${teacher}&api=${api}`;
+      const fullDedicatedUrl = `${indexUrl}?year=${year}&teacher=${teacher}&api=${api}&sheet=${sheet}`;
+      document.getElementById('sysUrlDisplay').innerText = fullDedicatedUrl;
     }
 
     function copySystemUrl() {
-      const dedicatedUrl = getDedicatedUrl();
-      if (!localStorage.getItem('homework_system_api_url')) {
-        alert('⚠️ 請先在「📖 建立範本與教學」中完成 Web App URL 設定，才能產生完整連線的專屬 Link！');
-        return;
-      }
+      const displayUrl = document.getElementById('sysUrlDisplay').innerText;
+      if (displayUrl.startsWith('(')) { alert('⚠️ 請先填寫 Web App URL！'); return; }
 
-      navigator.clipboard.writeText(dedicatedUrl).then(() => {
-        alert('✅ 帶有連線設定的專屬 Link 已成功複製！\n你可以傳送到手機、平板或其他裝置開啟，新裝置將會自動載入設定！');
-      }).catch(() => {
-        alert('請複製以下專屬網址：\n' + dedicatedUrl);
-      });
+      navigator.clipboard.writeText(displayUrl).then(() => {
+        alert('✅ 帶有連線設定與 Google Sheet 連結的專屬 Link 已成功複製！');
+      }).catch(() => { alert('請複製以下專屬網址：\n' + displayUrl); });
     }
 
-    function openThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    function setTheme(themeName) {
-      document.body.classList.remove('theme-green', 'theme-orange', 'theme-purple', 'theme-dark');
-      if (themeName !== 'default') document.body.classList.add(themeName);
-      localStorage.setItem('homework_theme', themeName);
-    }
-
-    function setFontSize(sizeClass) {
-      document.body.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
-      document.body.classList.add(sizeClass);
-      localStorage.setItem('homework_font_size', sizeClass);
-
-      document.querySelectorAll('.font-btn').forEach(btn => btn.classList.remove('active'));
-      if (sizeClass === 'font-small' && document.getElementById('fontSmallBtn')) document.getElementById('fontSmallBtn').classList.add('active');
-      if (sizeClass === 'font-medium' && document.getElementById('fontMediumBtn')) document.getElementById('fontMediumBtn').classList.add('active');
-      if (sizeClass === 'font-large' && document.getElementById('fontLargeBtn')) document.getElementById('fontLargeBtn').classList.add('active');
-      if (sizeClass === 'font-xlarge' && document.getElementById('fontXLargeBtn')) document.getElementById('fontXLargeBtn').classList.add('active');
-    }
-
-    function loadPersonalizationSettings() {
-      const savedTheme = localStorage.getItem('homework_theme') || 'default';
-      const savedFontSize = localStorage.getItem('homework_font_size') || 'font-medium';
-      setTheme(savedTheme);
-      setFontSize(savedFontSize);
-    }
-
-    /* 系統業務邏輯 */
-    let rawSubjectData = {};
-    let currentSubject = '';
-    let currentClass = '';
-    let selectedType = '';
-    let studentStates = {};
-    let pendingCorrectionsMap = {}; 
-    let draftCorrectionChanges = {}; 
-    let customHomeworkTypes = [];
-
-    window.onload = function() {
-      checkAndImportUrlParams();
-      loadPersonalizationSettings();
-
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('issueDate').value = today;
-      document.getElementById('checkDate').value = today;
-
-      loadHomeworkTypes();
-
-      const year = localStorage.getItem('homework_academic_year') || '2026-2027';
-      const teacher = localStorage.getItem('homework_teacher_code') || '未設定';
-      const apiUrl = localStorage.getItem('homework_system_api_url');
-
-      document.getElementById('displayYear').innerText = year;
-      document.getElementById('displayTeacher').innerText = teacher;
-
-      if (!apiUrl) {
-        document.getElementById('studentContainer').innerHTML = 
-          '<div style="padding: 30px; text-align: center; color: #dc3545; font-size:1.1em;">⚠️ 尚未設定 Web App URL！請點擊右上角「📖 建立範本與教學」完成連線設定。</div>';
-      } else {
-        fetchInitialData();
-      }
-    };
-
-    /* 關鍵自動修正：將 Apps Script 資料結構自動轉換為以「班別」(如 4A) 為 Key 的結構 */
-    function normalizeData(fetchedData) {
-      const normalized = {};
-
-      Object.keys(fetchedData).forEach(subject => {
-        normalized[subject] = {};
-        const subjectObj = fetchedData[subject];
-
-        // 檢查 Key 是否為數字（即舊結構將學號設為了 Key）
-        const keys = Object.keys(subjectObj);
-        const isLegacyFormat = keys.length > 0 && !isNaN(keys[0]);
-
-        if (isLegacyFormat) {
-          // 自動從舊格式轉譯：按 classGroup（班別）重新分類學生
-          keys.forEach(k => {
-            const studentArr = Array.isArray(subjectObj[k]) ? subjectObj[k] : [subjectObj[k]];
-            studentArr.forEach(st => {
-              const cls = st.classGroup || st.class || '4A'; // 預設降級相容
-              if (!normalized[subject][cls]) normalized[subject][cls] = [];
-              normalized[subject][cls].push({
-                id: st.id || k,
-                name: st.name
-              });
-            });
-          });
-        } else {
-          // 標準新格式直接賦值
-          normalized[subject] = subjectObj;
-        }
-      });
-
-      return normalized;
-    }
-
-    function fetchInitialData() {
-      const apiUrl = localStorage.getItem('homework_system_api_url');
-      if (!apiUrl) return;
-
-      fetch(`${apiUrl}?action=getInitialData`)
-        .then(res => res.json())
-        .then(res => {
-          if (res.status === 'success') {
-            rawSubjectData = normalizeData(res.data || {});
-            renderSubjectSelect();
-          }
-        })
-        .catch(err => {
-          alert('無法讀取 Google Sheet 資料，請確認 API URL。');
-        });
-    }
-
-    function renderSubjectSelect() {
-      const select = document.getElementById('subjectSelect');
-      select.innerHTML = '';
-
-      const subjects = Object.keys(rawSubjectData);
-      if (subjects.length === 0) {
-        select.innerHTML = '<option value="">(無科目資料)</option>';
-        return;
-      }
-
-      subjects.forEach(sub => {
-        const opt = document.createElement('option');
-        opt.value = sub;
-        opt.innerText = sub;
-        select.appendChild(opt);
-      });
-
-      currentSubject = subjects[0];
-      document.getElementById('currentSubjectText').innerText = currentSubject;
-      renderClassTabs();
-    }
-
-    function onSubjectChange() {
-      currentSubject = document.getElementById('subjectSelect').value;
-      document.getElementById('currentSubjectText').innerText = currentSubject;
-      renderClassTabs();
-    }
-
-    function renderClassTabs() {
-      const tabGroup = document.getElementById('classTabGroup');
-      tabGroup.innerHTML = '';
-
-      const classesObj = rawSubjectData[currentSubject] || {};
-      const classList = Object.keys(classesObj); // 取出真實班別陣列 ['4A', '5A']
-
-      if (classList.length === 0) {
-        tabGroup.innerHTML = '<div style="color: #888;">該科目無班別紀錄。</div>';
-        return;
-      }
-
-      classList.forEach(className => {
-        const btn = document.createElement('button');
-        btn.className = `tab-btn ${className === currentClass ? 'active' : ''}`;
-        btn.innerText = className; // 顯示 4A, 5A
-        btn.onclick = () => switchClass(className);
-        tabGroup.appendChild(btn);
-      });
-
-      if (!currentClass || !classList.includes(currentClass)) {
-        currentClass = classList[0];
-      }
-      
-      switchClass(currentClass);
-    }
-
-    function switchClass(className) {
-      currentClass = className;
-      document.getElementById('currentClassText').innerText = className;
-      
-      const tabGroup = document.getElementById('classTabGroup');
-      tabGroup.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText === className);
-      });
-
-      draftCorrectionChanges = {}; 
-      loadStudents();
-    }
-
-    function loadStudents() {
-      fetchPendingCorrections().then(() => {
-        renderStudentRows();
-      });
-    }
-
-    function fetchPendingCorrections() {
-      const apiUrl = localStorage.getItem('homework_system_api_url');
-      pendingCorrectionsMap = {};
-      if (!apiUrl) return Promise.resolve();
-
-      return fetch(`${apiUrl}?action=getPendingCorrections&subject=${encodeURIComponent(currentSubject)}&classGroup=${encodeURIComponent(currentClass)}`)
-        .then(res => res.json())
-        .then(res => {
-          if (res.status === 'success') {
-            res.data.forEach(item => {
-              if (!pendingCorrectionsMap[item.studentId]) pendingCorrectionsMap[item.studentId] = [];
-              pendingCorrectionsMap[item.studentId].push(item);
-            });
-          }
-        }).catch(() => {});
-    }
-
-    function renderStudentRows() {
-      const container = document.getElementById('studentContainer');
-      container.innerHTML = '';
-      studentStates = {};
-
-      const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
-
-      if (list.length === 0) {
-        container.innerHTML = '<div style="padding: 20px; text-align: center; color: #888;">該科目與班別暫無學生名單。</div>';
-        return;
-      }
-
-      list.forEach(student => {
-        studentStates[student.id] = '全對';
-        const allPending = pendingCorrectionsMap[String(student.id)] || [];
-        const filteredPending = allPending.filter(item => item.type === selectedType);
-
-        let correctionBoxHtml = '';
-        if (filteredPending.length > 0) {
-          correctionBoxHtml = `<div class="correction-box-inline">`;
-          filteredPending.forEach(item => {
-            const currentStatus = draftCorrectionChanges[item.rowIndex] || item.status;
-            correctionBoxHtml += `
-              <span class="correction-label">⚠️過往欠改/紀錄[${item.issueDate} ${item.pages || ''}]:</span>
-              <div class="c-btn-group" id="cGroup_${item.rowIndex}">
-                <button class="c-btn c-btn-missing ${currentStatus === '欠改' ? 'active' : ''}" onclick="setDraftCorrection(${item.rowIndex}, '欠改')">欠改</button>
-                <button class="c-btn c-btn-redo ${currentStatus === '重改' ? 'active' : ''}" onclick="setDraftCorrection(${item.rowIndex}, '重改')">重改</button>
-                <button class="c-btn c-btn-done ${currentStatus === '已改正' ? 'active' : ''}" onclick="setDraftCorrection(${item.rowIndex}, '已改正')">已改正/已補交</button>
-              </div>
-            `;
-          });
-          correctionBoxHtml += `</div>`;
-        }
-
-        const row = document.createElement('div');
-        row.className = 'student-row';
-        row.innerHTML = `
-          <div class="student-info">
-            <span>(${student.id})</span>
-            <span class="student-name-link" onclick="openStudentModal('${student.id}', '${student.name}')" title="點擊檢視欠改細項">${student.name} 🔍</span>
-          </div>
-          <div class="controls-wrapper">
-            ${correctionBoxHtml}
-            <div class="status-group" id="statusGroup_${student.id}">
-              <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${student.id}', '全對')">全對</button>
-              <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${student.id}', '欠日期')">欠日期</button>
-              <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${student.id}', '要改正')">要改正</button>
-              <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${student.id}', '欠交')">欠交</button>
-              <button class="status-btn" data-status="缺席" onclick="setStudentStatus('${student.id}', '缺席')">缺席</button>
-              <button class="status-btn" data-status="申請延期" onclick="setStudentStatus('${student.id}', '申請延期')">申請延期</button>
-            </div>
-          </div>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function openStudentModal(studentId, studentName) {
-      const allPending = pendingCorrectionsMap[String(studentId)] || [];
-      document.getElementById('modalTitle').innerText = `📋 (${studentId}) ${studentName} - 欠改／欠交功課細項列表`;
-      
-      const content = document.getElementById('modalContent');
-      content.innerHTML = '';
-
-      if (allPending.length === 0) {
-        content.innerHTML = '<div style="text-align:center; color:#28a745; padding:20px; font-weight:bold;">🎉 該學生目前沒有任何欠改或欠交紀錄！</div>';
-      } else {
-        allPending.forEach((item, index) => {
-          const div = document.createElement('div');
-          div.className = 'pending-item';
-          div.innerHTML = `
-            <strong>#${index + 1} [${item.type}]</strong> | 派發日期：${item.issueDate}<br>
-            📄 細項/頁數：${item.pages || '無'} | 狀態：<span style="color:#d9480f; font-weight:bold;">${item.status}</span>
-          `;
-          content.appendChild(div);
-        });
-      }
-
-      document.getElementById('studentModal').style.display = 'flex';
-    }
-
-    function setStudentStatus(studentId, status) {
-      studentStates[studentId] = status;
-      const group = document.getElementById(`statusGroup_${studentId}`);
-      group.querySelectorAll('.status-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-status') === status));
-    }
-
-    function setAllStatus(status) {
-      const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
-      list.forEach(student => setStudentStatus(student.id, status));
-    }
-
-    function setDraftCorrection(rowIndex, newStatus) {
-      draftCorrectionChanges[rowIndex] = newStatus;
-      const group = document.getElementById(`cGroup_${rowIndex}`);
-      if (group) {
-        group.querySelectorAll('.c-btn').forEach(btn => btn.classList.remove('active'));
-        if (newStatus === '欠改') group.querySelector('.c-btn-missing').classList.add('active');
-        if (newStatus === '重改') group.querySelector('.c-btn-redo').classList.add('active');
-        if (newStatus === '已改正') group.querySelector('.c-btn-done').classList.add('active');
-      }
-    }
-
-    function loadHomeworkTypes() {
-      const savedTypes = localStorage.getItem('homework_custom_types');
-      if (savedTypes) customHomeworkTypes = JSON.parse(savedTypes);
-      if (!selectedType && customHomeworkTypes.length > 0) selectedType = customHomeworkTypes[0];
-      renderTypeButtons();
-    }
-
-    function saveHomeworkTypes() {
-      localStorage.setItem('homework_custom_types', JSON.stringify(customHomeworkTypes));
-    }
-
-    function renderTypeButtons() {
-      const container = document.getElementById('typeButtons');
-      container.innerHTML = '';
-
-      customHomeworkTypes.forEach((typeName, index) => {
-        const badge = document.createElement('div');
-        badge.className = `type-badge ${typeName === selectedType ? 'active' : ''}`;
-        
-        badge.innerHTML = `
-          <span onclick="selectType('${typeName}')">${typeName}</span>
-          <span class="type-action-btn" onclick="editHomeworkType(event, ${index})" title="修改名稱">✏️</span>
-          <span class="type-action-btn" onclick="deleteHomeworkType(event, ${index})" title="刪除種類">❌</span>
-        `;
-
-        container.appendChild(badge);
-      });
-
-      const addBtn = document.createElement('button');
-      addBtn.className = 'add-type-btn';
-      addBtn.innerText = customHomeworkTypes.length === 0 ? '+ 新增第一個功課種類' : '+ 新增種類';
-      addBtn.onclick = addNewHomeworkType;
-      container.appendChild(addBtn);
-
-      document.getElementById('currentTypeText').innerText = selectedType || '尚未選擇/無種類';
-    }
-
-    function addNewHomeworkType() {
-      const newType = prompt('請輸入新的功課種類名稱：');
-      if (newType && newType.trim() !== '') {
-        const trimmed = newType.trim();
-        if (!customHomeworkTypes.includes(trimmed)) {
-          customHomeworkTypes.push(trimmed);
-          saveHomeworkTypes();
-          selectedType = trimmed;
-          renderTypeButtons();
-          if (currentClass) renderStudentRows();
-        } else {
-          alert('該功課種類名稱已存在！');
-        }
-      }
-    }
-
-    function editHomeworkType(event, index) {
-      event.stopPropagation();
-      const oldName = customHomeworkTypes[index];
-      const newName = prompt('請修改功課種類名稱：', oldName);
-      
-      if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
-        const trimmed = newName.trim();
-        customHomeworkTypes[index] = trimmed;
-        if (selectedType === oldName) selectedType = trimmed;
-        saveHomeworkTypes();
-        renderTypeButtons();
-        if (currentClass) renderStudentRows();
-      }
-    }
-
-    function deleteHomeworkType(event, index) {
-      event.stopPropagation();
-      const targetName = customHomeworkTypes[index];
-      
-      if (confirm(`確定要刪除「${targetName}」功課種類嗎？`)) {
-        customHomeworkTypes.splice(index, 1);
-        saveHomeworkTypes();
-
-        if (selectedType === targetName) {
-          selectedType = customHomeworkTypes.length > 0 ? customHomeworkTypes[0] : '';
-        }
-
-        renderTypeButtons();
-        if (currentClass) renderStudentRows();
-      }
-    }
-
-    function selectType(typeName) {
-      selectedType = typeName;
-      document.getElementById('currentTypeText').innerText = typeName;
-      renderTypeButtons();
-      if (currentClass) renderStudentRows();
-    }
-
-    function submitHomework() {
-      const apiUrl = localStorage.getItem('homework_system_api_url');
-      const academicYear = localStorage.getItem('homework_academic_year') || '2026-2027';
-      const teacherCode = localStorage.getItem('homework_teacher_code') || '無代號';
-
-      if (!apiUrl) { alert('請先在設定頁面填寫 API URL！'); return; }
-      if (!selectedType) { alert('請先新增並選擇功課種類！'); return; }
-
-      const isConfirmed = confirm(`❓ 確定要將【${academicYear} ${currentSubject} - ${currentClass}班】的【${selectedType}】功課記錄儲存至 Google Sheets 嗎？`);
-      if (!isConfirmed) {
-        return;
-      }
-
-      const payload = {
-        action: 'saveHomework',
-        payload: {
-          academicYear: academicYear,
-          teacherCode: teacherCode,
-          subject: currentSubject,
-          classGroup: currentClass,
-          issueDate: document.getElementById('issueDate').value,
-          checkDate: document.getElementById('checkDate').value,
-          type: selectedType,
-          pages: document.getElementById('pages').value.trim(),
-          questions: document.getElementById('questions').value.trim(),
-          students: ((rawSubjectData[currentSubject] || {})[currentClass] || []).map(student => ({
-            id: student.id, name: student.name, status: studentStates[student.id] || '全對'
-          })),
-          corrections: Object.keys(draftCorrectionChanges).map(rowIndex => ({
-            rowIndex: Number(rowIndex), newStatus: draftCorrectionChanges[rowIndex]
-          }))
-        }
-      };
-
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = '資料儲存中...';
-
-      fetch(apiUrl, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(() => {
-        alert(`✅ 【${academicYear} ${currentSubject} - ${currentClass}班】功課已成功儲存！`);
-        submitBtn.disabled = false;
-        submitBtn.innerText = '儲存新功課至 Google Sheets';
-        draftCorrectionChanges = {}; 
-        loadStudents();
-      }).catch(err => {
-        alert('❌ 儲存失敗：' + err);
-        submitBtn.disabled = false;
-        submitBtn.innerText = '儲存新功課至 Google Sheets';
-      });
+    function saveSettings() {
+      const year = document.getElementById('academicYearInput').value.trim() || '2026-2027';
+      const teacher = document.getElementById('teacherCodeInput').value.trim() || '無代號';
+      const url = document.getElementById('apiUrlInput').value.trim();
+      const sheet = document.getElementById('sheetUrlInput').value.trim();
+
+      if (!url) { alert('請先輸入有效的 Web App URL！'); return; }
+
+      localStorage.setItem('homework_academic_year', year);
+      localStorage.setItem('homework_teacher_code', teacher);
+      localStorage.setItem('homework_system_api_url', url);
+      localStorage.setItem('homework_sheet_url', sheet);
+
+      alert('✅ 設定已成功儲存！即將返回主頁。');
+      goToHome();
     }
   </script>
-
 </body>
 </html>
