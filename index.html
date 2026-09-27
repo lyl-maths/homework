@@ -85,12 +85,6 @@
       border-radius: 20px; font-size: 0.9em; cursor: pointer;
     }
     .type-badge.active { background-color: #28a745; color: #fff; border-color: #28a745; font-weight: bold; }
-    .type-action-btn { font-size: 0.85em; cursor: pointer; opacity: 0.75; padding: 2px 4px; border-radius: 50%; }
-
-    .add-type-btn {
-      padding: 6px 14px; border: 1px dashed var(--primary-color); background-color: var(--card-bg);
-      color: var(--primary-color); border-radius: 20px; cursor: pointer; font-size: 0.85em; font-weight: bold;
-    }
 
     .start-grading-box { text-align: right; margin-bottom: 20px; }
     .start-grading-btn {
@@ -110,7 +104,6 @@
       padding: 12px 14px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
     }
 
-    /* 精簡後的上次紀錄嵌入卡片 (已隱藏日期) */
     .prev-record-box {
       display: inline-flex; align-items: center; gap: 8px; background: #fff8e1;
       border: 1px solid #ffe082; padding: 6px 12px; border-radius: 8px; font-size: 0.88em; margin-right: 10px;
@@ -216,7 +209,7 @@
       </div>
 
       <div class="form-group full-width">
-        <label>功課種類 (點擊選擇，點擊 ✏️ 修改，❌ 刪除)：</label>
+        <label>功課種類 (由 Google Sheet「功課種類」分頁自動載入，點擊選擇)：</label>
         <div class="type-buttons" id="typeButtons"></div>
       </div>
     </div>
@@ -264,7 +257,7 @@
         <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
         <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
           <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
-          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
+          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</option>
           <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
           <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
         </div>
@@ -415,42 +408,33 @@
       navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 帶有專屬 Google Sheet 連結的專屬 Link 已成功複製！'));
     }
 
+    /* --- 從 Google Sheets 動態載入功課種類 --- */
+    let typesBySubjectMap = {}; // 來自 Google Sheet 的功課種類對照表
     let customHomeworkTypes = [];
     let selectedType = '';
 
-    function loadHomeworkTypes() {
-      const saved = localStorage.getItem('homework_custom_types');
-      if (saved) customHomeworkTypes = JSON.parse(saved);
-      if (customHomeworkTypes.length > 0 && !selectedType) {
-        selectedType = customHomeworkTypes[0];
-      }
+    function loadHomeworkTypesForSubject() {
+      customHomeworkTypes = typesBySubjectMap[currentSubject] || ['作業', '工作紙'];
+      selectedType = customHomeworkTypes.length > 0 ? customHomeworkTypes[0] : '';
       renderTypeButtons();
-    }
-
-    function saveHomeworkTypes() {
-      localStorage.setItem('homework_custom_types', JSON.stringify(customHomeworkTypes));
     }
 
     function renderTypeButtons() {
       const container = document.getElementById('typeButtons');
       container.innerHTML = '';
 
-      customHomeworkTypes.forEach((type, index) => {
+      if (customHomeworkTypes.length === 0) {
+        container.innerHTML = '<span style="color:#888;">⚠️ 請在 Google Sheet「功課種類」分頁新增此科目的功課項目。</span>';
+        return;
+      }
+
+      customHomeworkTypes.forEach(type => {
         const badge = document.createElement('div');
         badge.className = `type-badge ${type === selectedType ? 'active' : ''}`;
-        badge.innerHTML = `
-          <span onclick="selectType('${type}')">${type}</span>
-          <span class="type-action-btn" onclick="editType(event, ${index})">✏️</span>
-          <span class="type-action-btn" onclick="deleteType(event, ${index})">❌</span>
-        `;
+        badge.innerText = type;
+        badge.onclick = () => selectType(type);
         container.appendChild(badge);
       });
-
-      const addBtn = document.createElement('button');
-      addBtn.className = 'add-type-btn';
-      addBtn.innerText = customHomeworkTypes.length === 0 ? '+ 新增第一個功課種類' : '+ 新增種類';
-      addBtn.onclick = addNewType;
-      container.appendChild(addBtn);
 
       document.getElementById('currentTypeText').innerText = selectedType || '未選擇';
     }
@@ -458,45 +442,6 @@
     function selectType(type) {
       selectedType = type;
       renderTypeButtons();
-    }
-
-    function addNewType() {
-      const val = prompt('請輸入新功課種類名稱：');
-      if (val && val.trim() !== '') {
-        const trimmed = val.trim();
-        if (!customHomeworkTypes.includes(trimmed)) {
-          customHomeworkTypes.push(trimmed);
-          selectedType = trimmed;
-          saveHomeworkTypes();
-          renderTypeButtons();
-        }
-      }
-    }
-
-    function editType(e, index) {
-      e.stopPropagation();
-      const oldVal = customHomeworkTypes[index];
-      const newVal = prompt('請修改功課種類名稱：', oldVal);
-      if (newVal && newVal.trim() !== '' && newVal.trim() !== oldVal) {
-        const trimmed = newVal.trim();
-        customHomeworkTypes[index] = trimmed;
-        if (selectedType === oldVal) selectedType = trimmed;
-        saveHomeworkTypes();
-        renderTypeButtons();
-      }
-    }
-
-    function deleteType(e, index) {
-      e.stopPropagation();
-      const target = customHomeworkTypes[index];
-      if (confirm(`確定要刪除「${target}」功課種類嗎？`)) {
-        customHomeworkTypes.splice(index, 1);
-        if (selectedType === target) {
-          selectedType = customHomeworkTypes.length > 0 ? customHomeworkTypes[0] : '';
-        }
-        saveHomeworkTypes();
-        renderTypeButtons();
-      }
     }
 
     let rawSubjectData = {};
@@ -516,7 +461,6 @@
       document.getElementById('displayYear').innerText = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('displayTeacher').innerText = localStorage.getItem('homework_teacher_code') || '未設定';
 
-      loadHomeworkTypes();
       fetchInitialData();
     };
 
@@ -534,6 +478,7 @@
         .then(res => {
           if (res.status === 'success') {
             rawSubjectData = res.data || {};
+            typesBySubjectMap = res.typesBySubject || {}; // 讀取後端傳回的功課種類設定
             if (res.spreadsheetUrl) {
               localStorage.setItem('homework_sheet_url', res.spreadsheetUrl);
             }
@@ -562,6 +507,8 @@
     function onSubjectChange() {
       currentSubject = document.getElementById('subjectSelect').value;
       document.getElementById('currentSubjectText').innerText = currentSubject;
+      
+      loadHomeworkTypesForSubject();
       renderClassTabs();
     }
 
@@ -618,7 +565,7 @@
             pendingRecordsMap = res.data || {};
             correctionUpdates = {};
             renderStudentRows();
-            alert(`✅ 已為「${selectedType}」成功載入上一次功課跟進紀錄！`);
+            alert(`✅ 已為【${currentSubject}】的「${selectedType}」成功載入上一次跟進紀錄！`);
           }
         });
     }
@@ -657,7 +604,6 @@
         studentStates[id] = '全對';
         const prevRec = pendingRecordsMap[id];
 
-        // 移除日期顯示，格式為: 📋 上次紀錄 (功課細項): 狀態
         let prevRecordHtml = '';
         if (prevRec) {
           prevRecordHtml = `
@@ -705,7 +651,7 @@
     function submitHomework() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
       if (!apiUrl) { alert('請先設定 API URL！'); return; }
-      if (!selectedType) { alert('請先新增並選擇功課種類！'); return; }
+      if (!selectedType) { alert('請先選擇功課種類！'); return; }
 
       const correctionsArray = Object.keys(correctionUpdates).map(rIndex => ({
         rowIndex: parseInt(rIndex),
