@@ -237,7 +237,6 @@
       navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 帶有專屬 Google Sheet 連結的專屬 Link 已成功複製！'));
     }
 
-    /* 功課種類動態管理 */
     let customHomeworkTypes = [];
     let selectedType = '';
 
@@ -344,7 +343,12 @@
       const apiUrl = localStorage.getItem('homework_system_api_url');
       if (!apiUrl) return;
 
-      fetch(`${apiUrl}?action=getInitialData`)
+      const year = localStorage.getItem('homework_academic_year') || '2026-2027';
+      const teacher = localStorage.getItem('homework_teacher_code') || '';
+
+      const requestUrl = `${apiUrl}?action=getInitialData&academicYear=${encodeURIComponent(year)}&teacherCode=${encodeURIComponent(teacher)}`;
+
+      fetch(requestUrl)
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {

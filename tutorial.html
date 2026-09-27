@@ -146,7 +146,6 @@
 
   <script>
     window.onload = function() {
-      // 讀取老師自己之前儲存的設定，沒有則留空讓老師自行輸入
       document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
       document.getElementById('apiUrlInput').value = localStorage.getItem('homework_system_api_url') || '';
@@ -208,12 +207,10 @@
         return;
       }
 
-      // 儲存該位老師專屬輸入的學年與代號
       localStorage.setItem('homework_academic_year', year);
       localStorage.setItem('homework_teacher_code', teacher);
       localStorage.setItem('homework_system_api_url', url);
 
-      // 動態將老師填入的 teacher 變數帶入 API 請求發送給後端
       const testApiUrl = `${url}?action=getInitialData&academicYear=${encodeURIComponent(year)}&teacherCode=${encodeURIComponent(teacher)}`;
 
       fetch(testApiUrl)
