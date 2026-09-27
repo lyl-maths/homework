@@ -92,7 +92,9 @@
       font-size: 1.05em; font-weight: bold; border-radius: 25px; cursor: pointer;
       box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3); transition: transform 0.1s;
     }
-    .start-grading-btn:active { transform: scale(0.98); }
+    .start-grading-btn:disabled, .submit-btn:disabled {
+      background-color: #a0aec0 !important; cursor: not-allowed !important; box-shadow: none !important;
+    }
 
     .student-list-header {
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
@@ -215,7 +217,7 @@
     </div>
 
     <div class="start-grading-box">
-      <button class="start-grading-btn" onclick="startGrading()">🔍 開始批改 (載入上一次同類功課跟進紀錄)</button>
+      <button class="start-grading-btn" id="startGradingBtn" onclick="startGrading()">🔍 開始批改 (載入上一次同類功課跟進紀錄)</button>
     </div>
 
     <div class="student-list-header">
@@ -257,7 +259,7 @@
         <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
         <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
           <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
-          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</option>
+          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
           <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
           <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
         </div>
@@ -408,8 +410,7 @@
       navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 帶有專屬 Google Sheet 連結的專屬 Link 已成功複製！'));
     }
 
-    /* --- 從 Google Sheets 動態載入功課種類 --- */
-    let typesBySubjectMap = {}; // 來自 Google Sheet 的功課種類對照表
+    let typesBySubjectMap = {};
     let customHomeworkTypes = [];
     let selectedType = '';
 
@@ -478,7 +479,7 @@
         .then(res => {
           if (res.status === 'success') {
             rawSubjectData = res.data || {};
-            typesBySubjectMap = res.typesBySubject || {}; // 讀取後端傳回的功課種類設定
+            typesBySubjectMap = res.typesBySubject || {};
             if (res.spreadsheetUrl) {
               localStorage.setItem('homework_sheet_url', res.spreadsheetUrl);
             }
@@ -558,15 +559,27 @@
       if (!apiUrl) { alert('請先設定 API URL！'); return; }
       if (!selectedType) { alert('請先選擇功課種類！'); return; }
 
+      const gradingBtn = document.getElementById('startGradingBtn');
+      gradingBtn.disabled = true;
+      gradingBtn.innerText = '⏳ 載入中 Loading...';
+
       fetch(`${apiUrl}?action=getPendingCorrections&subject=${encodeURIComponent(currentSubject)}&classGroup=${encodeURIComponent(currentClass)}&type=${encodeURIComponent(selectedType)}`)
         .then(res => res.json())
         .then(res => {
+          gradingBtn.disabled = false;
+          gradingBtn.innerText = '🔍 開始批改 (載入上一次同類功課跟進紀錄)';
+
           if (res.status === 'success') {
             pendingRecordsMap = res.data || {};
             correctionUpdates = {};
             renderStudentRows();
             alert(`✅ 已為【${currentSubject}】的「${selectedType}」成功載入上一次跟進紀錄！`);
           }
+        })
+        .catch(() => {
+          gradingBtn.disabled = false;
+          gradingBtn.innerText = '🔍 開始批改 (載入上一次同類功課跟進紀錄)';
+          alert('⚠️ 載入失敗，請重新嘗試。');
         });
     }
 
@@ -653,6 +666,11 @@
       if (!apiUrl) { alert('請先設定 API URL！'); return; }
       if (!selectedType) { alert('請先選擇功課種類！'); return; }
 
+      // 鎖定儲存按鈕並顯示 Saving...
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = '⏳ 儲存中 Saving...';
+
       const correctionsArray = Object.keys(correctionUpdates).map(rIndex => ({
         rowIndex: parseInt(rIndex),
         newStatus: correctionUpdates[rIndex]
@@ -682,8 +700,16 @@
 
       fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
         .then(() => {
+          // 恢復按鈕狀態
+          submitBtn.disabled = false;
+          submitBtn.innerText = '儲存新功課至 Google Sheets';
           alert('✅ 功課記錄與改正跟進已成功儲存！');
           startGrading();
+        })
+        .catch(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerText = '儲存新功課至 Google Sheets';
+          alert('⚠️ 儲存失敗，請檢查網路連線。');
         });
     }
   </script>
