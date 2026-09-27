@@ -67,16 +67,9 @@
     }
     .tab-btn.active { background-color: var(--primary-color); color: #fff; }
 
-    .pending-card {
-      background: #fff8e1; border: 1px solid #ffe082; padding: 15px; border-radius: 10px; margin-bottom: 20px;
-    }
-    .pending-row {
-      display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #ffe082;
-    }
-
     .form-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
-      margin-bottom: 20px; background: var(--accent-info); padding: 20px;
+      margin-bottom: 15px; background: var(--accent-info); padding: 20px;
       border-radius: 10px; border: 1px solid var(--border-color);
     }
 
@@ -99,22 +92,46 @@
       color: var(--primary-color); border-radius: 20px; cursor: pointer; font-size: 0.85em; font-weight: bold;
     }
 
+    .start-grading-box { text-align: right; margin-bottom: 20px; }
+    .start-grading-btn {
+      background-color: #d97706; color: white; border: none; padding: 12px 28px;
+      font-size: 1.05em; font-weight: bold; border-radius: 25px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3); transition: transform 0.1s;
+    }
+    .start-grading-btn:active { transform: scale(0.98); }
+
     .student-list-header {
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
-      margin-top: 25px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color);
+      margin-top: 15px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color);
     }
 
     .student-row {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
-      padding: 10px 12px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
+      padding: 12px 14px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
     }
 
-    .status-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    /* 上一次紀錄嵌入卡片 (放在全對前面) */
+    .prev-record-box {
+      display: inline-flex; align-items: center; gap: 8px; background: #fff8e1;
+      border: 1px solid #ffe082; padding: 6px 12px; border-radius: 8px; font-size: 0.88em; margin-right: 10px;
+    }
+
+    .prev-record-text { color: #d9534f; font-weight: bold; }
+
+    .fix-btn-group { display: inline-flex; gap: 4px; margin-left: 6px; }
+    .fix-btn {
+      padding: 4px 8px; border: 1px solid #ccc; background: #fff; border-radius: 4px;
+      font-size: 0.82em; font-weight: bold; cursor: pointer;
+    }
+    .fix-btn.active[data-fix="要改正"] { background-color: #ffc107; color: black; border-color: #ffc107; }
+    .fix-btn.active[data-fix="欠改正"] { background-color: #e65100; color: white; border-color: #e65100; }
+    .fix-btn.active[data-fix="已完成改正"] { background-color: #28a745; color: white; border-color: #28a745; }
+
+    .status-group { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
     .status-btn { padding: 6px 10px; border: 1px solid var(--border-color); background-color: var(--accent-info); border-radius: 4px; cursor: pointer; font-size: 0.85em; }
     .status-btn[data-status="全對"].active { background-color: #28a745; color: white; }
     .status-btn[data-status="欠日期"].active { background-color: #d97706; color: white; }
     .status-btn[data-status="要改正"].active { background-color: #ffc107; color: black; }
-    .status-btn[data-status="欠改正"].active { background-color: #e65100; color: white; }
     .status-btn[data-status="欠交"].active { background-color: #dc3545; color: white; }
     .status-btn[data-status="缺席"].active { background-color: #6c757d; color: white; }
     .status-btn[data-status="申請延期"].active { background-color: #6f42c1; color: white; }
@@ -122,7 +139,7 @@
     .submit-box { margin-top: 30px; text-align: center; }
     .submit-btn { background-color: var(--primary-color); color: white; border: none; padding: 14px 40px; font-size: 1.1em; font-weight: bold; border-radius: 30px; cursor: pointer; }
 
-    /* 個人化 Modal */
+    /* Modal */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
@@ -132,7 +149,6 @@
       box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
     }
 
-    /* 按鈕揀色與揀字體特有樣式 */
     .option-btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
     .option-btn {
       padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg);
@@ -140,9 +156,7 @@
       transition: all 0.2s;
     }
     .option-btn:hover { border-color: var(--primary-color); }
-    .option-btn.active {
-      border-color: var(--primary-color); background-color: var(--primary-color); color: white;
-    }
+    .option-btn.active { border-color: var(--primary-color); background-color: var(--primary-color); color: white; }
 
     .color-btn[data-theme="blue"] { border-color: #0056b3; }
     .color-btn[data-theme="orange"] { border-color: #e65100; }
@@ -182,11 +196,6 @@
 
     <div class="tab-group" id="classTabGroup"></div>
 
-    <div class="pending-card" id="pendingCard" style="display:none;">
-      <h3 style="margin-top:0; color:#b78103;">🔍 待跟進之改正/補交項目 (過往紀錄)</h3>
-      <div id="pendingListContainer"></div>
-    </div>
-
     <h3>📝 今日新功課記錄</h3>
     <div class="form-grid">
       <div class="form-group">
@@ -212,6 +221,11 @@
       </div>
     </div>
 
+    <!-- 開始批改按鈕 -->
+    <div class="start-grading-box">
+      <button class="start-grading-btn" onclick="startGrading()">🔍 開始批改 (載入上一次同類功課跟進紀錄)</button>
+    </div>
+
     <div class="student-list-header">
       <h3>學生提交狀態 (當前科目：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 班別：<span id="currentClassText" style="color:var(--primary-color);">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
       <div>
@@ -227,7 +241,7 @@
     </div>
   </div>
 
-  <!-- 個人化設定 Modal (按鈕揀色 + 按鈕揀字體) -->
+  <!-- 個人化 Modal -->
   <div class="modal-overlay" id="themeModal">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -251,8 +265,8 @@
         <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
         <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
           <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
-          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
-          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
+          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</option>
+          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</option>
           <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
         </div>
       </div>
@@ -320,10 +334,8 @@
     function openThemeModal() {
       tempSelectedTheme = localStorage.getItem('homework_theme') || 'blue';
       tempSelectedFont = localStorage.getItem('homework_font_size') || '15px';
-      
       selectThemeBtn(tempSelectedTheme);
       selectFontBtn(tempSelectedFont);
-
       document.getElementById('themeModal').style.display = 'flex';
     }
 
@@ -492,6 +504,7 @@
     let currentSubject = '';
     let currentClass = '';
     let studentStates = {};
+    let pendingRecordsMap = {};
     let correctionUpdates = {};
 
     window.onload = function() {
@@ -589,61 +602,40 @@
         btn.classList.toggle('active', btn.innerText === className);
       });
 
+      pendingRecordsMap = {};
+      correctionUpdates = {};
       renderStudentRows();
-      fetchPendingCorrections();
     }
 
-    function fetchPendingCorrections() {
+    function startGrading() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
-      if (!apiUrl || !currentSubject || !currentClass) return;
+      if (!apiUrl) { alert('請先設定 API URL！'); return; }
+      if (!selectedType) { alert('請先選擇功課種類！'); return; }
 
-      fetch(`${apiUrl}?action=getPendingCorrections&subject=${encodeURIComponent(currentSubject)}&classGroup=${encodeURIComponent(currentClass)}`)
+      fetch(`${apiUrl}?action=getPendingCorrections&subject=${encodeURIComponent(currentSubject)}&classGroup=${encodeURIComponent(currentClass)}&type=${encodeURIComponent(selectedType)}`)
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            renderPendingCard(res.data || []);
+            pendingRecordsMap = res.data || {};
+            correctionUpdates = {};
+            renderStudentRows();
+            alert(`✅ 已為「${selectedType}」成功載入上一次功課跟進紀錄！`);
           }
         });
     }
 
-    function renderPendingCard(pendingList) {
-      const card = document.getElementById('pendingCard');
-      const container = document.getElementById('pendingListContainer');
-      container.innerHTML = '';
-      correctionUpdates = {};
-
-      if (pendingList.length === 0) {
-        card.style.display = 'none';
-        return;
-      }
-
-      card.style.display = 'block';
-
-      pendingList.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'pending-row';
-        row.innerHTML = `
-          <div>
-            <strong>(${item.studentId}) ${item.studentName}</strong> 
-            <span style="color:#666; font-size:0.9em;">[${item.issueDate}] ${item.type} - ${item.details}</span> 
-            <span style="color:#d9534f; font-weight:bold;">(原狀態: ${item.status})</span>
-          </div>
-          <select onchange="onPendingStatusChange(${item.rowIndex}, this.value)" style="padding:4px 8px; border-radius:4px;">
-            <option value="">-- 跟進狀態 --</option>
-            <option value="已完成改正">已完成改正</option>
-            <option value="已補交">已補交</option>
-            <option value="欠改正">繼續欠改正</option>
-          </select>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function onPendingStatusChange(rowIndex, newStatus) {
-      if (newStatus) {
-        correctionUpdates[rowIndex] = newStatus;
+    function setFixStatus(studentId, rowIndex, fixStatus) {
+      if (fixStatus) {
+        correctionUpdates[rowIndex] = fixStatus;
       } else {
         delete correctionUpdates[rowIndex];
+      }
+
+      const group = document.getElementById(`fixGroup_${studentId}`);
+      if (group) {
+        group.querySelectorAll('.fix-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-fix') === fixStatus);
+        });
       }
     }
 
@@ -664,19 +656,36 @@
         const name = typeof student === 'object' ? student.name : student;
 
         studentStates[id] = '全對';
+        const prevRec = pendingRecordsMap[id];
+
+        let prevRecordHtml = '';
+        if (prevRec) {
+          prevRecordHtml = `
+            <div class="prev-record-box">
+              <span>📋 上次紀錄 [${prevRec.issueDate}] (${prevRec.details}): <span class="prev-record-text">${prevRec.status}</span></span>
+              <div class="fix-btn-group" id="fixGroup_${id}">
+                <button class="fix-btn" data-fix="要改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '要改正')">重改</button>
+                <button class="fix-btn" data-fix="欠改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '欠改正')">欠改</button>
+                <button class="fix-btn" data-fix="已完成改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '已完成改正')">已完成</button>
+              </div>
+            </div>
+          `;
+        }
 
         const row = document.createElement('div');
         row.className = 'student-row';
         row.innerHTML = `
           <div><strong>(${id}) ${name}</strong></div>
-          <div class="status-group" id="statusGroup_${id}">
-            <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${id}', '全對')">全對</button>
-            <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${id}', '欠日期')">欠日期</button>
-            <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">要改正</button>
-            <button class="status-btn" data-status="欠改正" onclick="setStudentStatus('${id}', '欠改正')">欠改正</button>
-            <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">欠交</button>
-            <button class="status-btn" data-status="缺席" onclick="setStudentStatus('${id}', '缺席')">缺席</button>
-            <button class="status-btn" data-status="申請延期" onclick="setStudentStatus('${id}', '申請延期')">申請延期</button>
+          <div class="status-group">
+            ${prevRecordHtml}
+            <div id="statusGroup_${id}" style="display:inline-flex; gap:4px;">
+              <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${id}', '全對')">全對</button>
+              <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${id}', '欠日期')">欠日期</button>
+              <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">要改正</button>
+              <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">欠交</button>
+              <button class="status-btn" data-status="缺席" onclick="setStudentStatus('${id}', '缺席')">缺席</button>
+              <button class="status-btn" data-status="申請延期" onclick="setStudentStatus('${id}', '申請延期')">申請延期</button>
+            </div>
           </div>
         `;
         container.appendChild(row);
@@ -728,7 +737,7 @@
       fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
         .then(() => {
           alert('✅ 功課記錄與改正跟進已成功儲存！');
-          fetchPendingCorrections();
+          startGrading();
         });
     }
   </script>
