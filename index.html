@@ -128,9 +128,28 @@
       background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
     }
     .modal-box {
-      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px;
+      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
     }
+
+    /* 按鈕揀色與揀字體特有樣式 */
+    .option-btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+    .option-btn {
+      padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg);
+      color: var(--text-color); border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center;
+      transition: all 0.2s;
+    }
+    .option-btn:hover { border-color: var(--primary-color); }
+    .option-btn.active {
+      border-color: var(--primary-color); background-color: var(--primary-color); color: white;
+    }
+
+    .color-btn[data-theme="blue"] { border-color: #0056b3; }
+    .color-btn[data-theme="orange"] { border-color: #e65100; }
+    .color-btn[data-theme="yellow"] { border-color: #f57f17; }
+    .color-btn[data-theme="green"] { border-color: #2e7d32; }
+    .color-btn[data-theme="black"] { border-color: #333333; }
+    .color-btn[data-theme="purple"] { border-color: #6f42c1; }
   </style>
 </head>
 <body>
@@ -208,39 +227,44 @@
     </div>
   </div>
 
-  <!-- 個人化設定 Modal (包含 6 種顏色與 4 種字體) -->
+  <!-- 個人化設定 Modal (按鈕揀色 + 按鈕揀字體) -->
   <div class="modal-overlay" id="themeModal">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 style="margin:0;">🎨 個人化介面設定</h3>
         <span onclick="closeThemeModal()" style="cursor:pointer; font-weight:bold;">✕</span>
       </div>
-      <div class="form-group" style="margin-bottom:15px;">
-        <label for="themeSelect">選取主題顏色：</label>
-        <select id="themeSelect" style="padding:8px; border-radius:6px; margin-top:5px;">
-          <option value="blue">藍色 (Blue - 預設)</option>
-          <option value="orange">橙色 (Orange)</option>
-          <option value="yellow">黃色 (Yellow)</option>
-          <option value="green">綠色 (Green)</option>
-          <option value="black">黑色 (Black / 深色模式)</option>
-          <option value="purple">紫色 (Purple)</option>
-        </select>
+
+      <div style="margin-bottom:20px;">
+        <label style="font-weight:bold;">🎨 點擊按鈕選取主題顏色：</label>
+        <div class="option-btn-grid" id="colorBtnGroup">
+          <button class="option-btn color-btn" data-theme="blue" onclick="selectThemeBtn('blue')">💙 藍色</button>
+          <button class="option-btn color-btn" data-theme="orange" onclick="selectThemeBtn('orange')">🧡 橙色</button>
+          <button class="option-btn color-btn" data-theme="yellow" onclick="selectThemeBtn('yellow')">💛 黃色</button>
+          <button class="option-btn color-btn" data-theme="green" onclick="selectThemeBtn('green')">💚 綠色</button>
+          <button class="option-btn color-btn" data-theme="black" onclick="selectThemeBtn('black')">🖤 黑色</button>
+          <button class="option-btn color-btn" data-theme="purple" onclick="selectThemeBtn('purple')">💜 紫色</button>
+        </div>
       </div>
-      <div class="form-group" style="margin-bottom:20px;">
-        <label for="fontSizeSelect">選取字體大小：</label>
-        <select id="fontSizeSelect" style="padding:8px; border-radius:6px; margin-top:5px;">
-          <option value="13px">小 (13px)</option>
-          <option value="15px">標準 (15px)</option>
-          <option value="18px">大字體 (18px)</option>
-          <option value="21px">特大字體 (21px)</option>
-        </select>
+
+      <div style="margin-bottom:25px;">
+        <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
+        <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
+          <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
+          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
+          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
+          <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
+        </div>
       </div>
-      <button onclick="saveThemeSettings()" style="width:100%; padding:10px; background:var(--primary-color); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">💾 儲存並套用設定</button>
+
+      <button onclick="saveThemeSettings()" style="width:100%; padding:12px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold; font-size:1.05em; cursor:pointer;">💾 儲存並套用設定</button>
     </div>
   </div>
 
   <script>
-    /* 全局主題與字體切換核心邏輯 */
+    let tempSelectedTheme = 'blue';
+    let tempSelectedFont = '15px';
+
     function applySavedTheme() {
       const theme = localStorage.getItem('homework_theme') || 'blue';
       const fontSize = localStorage.getItem('homework_font_size') || '15px';
@@ -283,7 +307,7 @@
         root.style.setProperty('--text-color', '#3b0764');
         root.style.setProperty('--border-color', '#d8b4fe');
         root.style.setProperty('--accent-info', '#faf5ff');
-      } else { // 預設藍色
+      } else {
         root.style.setProperty('--primary-color', '#0056b3');
         root.style.setProperty('--bg-color', '#f4f7f9');
         root.style.setProperty('--card-bg', '#ffffff');
@@ -294,9 +318,27 @@
     }
 
     function openThemeModal() {
-      document.getElementById('themeSelect').value = localStorage.getItem('homework_theme') || 'blue';
-      document.getElementById('fontSizeSelect').value = localStorage.getItem('homework_font_size') || '15px';
+      tempSelectedTheme = localStorage.getItem('homework_theme') || 'blue';
+      tempSelectedFont = localStorage.getItem('homework_font_size') || '15px';
+      
+      selectThemeBtn(tempSelectedTheme);
+      selectFontBtn(tempSelectedFont);
+
       document.getElementById('themeModal').style.display = 'flex';
+    }
+
+    function selectThemeBtn(theme) {
+      tempSelectedTheme = theme;
+      document.querySelectorAll('#colorBtnGroup .option-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+      });
+    }
+
+    function selectFontBtn(size) {
+      tempSelectedFont = size;
+      document.querySelectorAll('#fontBtnGroup .option-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-size') === size);
+      });
     }
 
     function closeThemeModal() {
@@ -304,10 +346,8 @@
     }
 
     function saveThemeSettings() {
-      const theme = document.getElementById('themeSelect').value;
-      const fontSize = document.getElementById('fontSizeSelect').value;
-      localStorage.setItem('homework_theme', theme);
-      localStorage.setItem('homework_font_size', fontSize);
+      localStorage.setItem('homework_theme', tempSelectedTheme);
+      localStorage.setItem('homework_font_size', tempSelectedFont);
       applySavedTheme();
       closeThemeModal();
     }
