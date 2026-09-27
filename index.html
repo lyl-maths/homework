@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>建立範本與部署教學 - 班級功課記錄系統</title>
+  <title>班級功課記錄系統</title>
   <style>
+    /* 1. 全局 CSS 變數與主題 */
     :root {
       --primary-color: #0056b3;
       --bg-color: #f4f7f9;
@@ -31,158 +32,380 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     }
 
-    .header-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .header-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 15px; }
     h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
 
-    .nav-btn {
+    .header-btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .btn-action {
       padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9em;
-      cursor: pointer; text-decoration: none; background-color: #6c757d; color: white; border: none;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; color: white;
     }
 
-    .template-card {
-      background: #e6fffa; border: 2px dashed #319795;
-      padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: center;
-    }
+    .btn-sheet { background-color: #1d6f42; }
+    .btn-stats { background-color: #d9480f; }
+    .btn-tutorial { background-color: #319795; }
+    .btn-reset { background-color: #dc3545; }
 
-    .template-btn {
-      display: inline-block; background-color: #319795; color: white;
-      text-decoration: none; padding: 12px 28px; border-radius: 30px;
-      font-size: 1.1em; font-weight: bold; margin-top: 10px;
-    }
-
-    .config-card {
+    .system-info-bar {
       background-color: var(--accent-info); border: 1px solid var(--border-color);
-      padding: 20px; border-radius: 10px; margin-bottom: 25px;
+      padding: 12px 18px; border-radius: 8px; margin-bottom: 20px;
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
     }
 
-    .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-weight: bold; font-size: 0.9em; }
-    .form-group input {
-      padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
-      font-size: 0.95em; background: var(--card-bg); color: var(--text-color);
-    }
-
-    .save-btn {
+    .copy-sys-link-btn {
       background-color: var(--primary-color); color: white; border: none;
-      padding: 12px 24px; font-size: 1em; font-weight: bold; border-radius: 6px;
-      cursor: pointer; width: 100%; transition: background-color 0.2s;
+      padding: 5px 12px; border-radius: 6px; font-size: 0.85em; cursor: pointer; font-weight: bold; margin-left: 10px;
     }
 
-    .sys-link-card {
-      background-color: #e8f5e9; border: 1px solid #81c784; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;
+    .tab-group { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 10px 24px; font-size: 1.1em; font-weight: bold;
+      border: 2px solid var(--primary-color); background-color: var(--card-bg);
+      color: var(--primary-color); border-radius: 8px; cursor: pointer; text-align: center; min-width: 90px;
     }
-    .sys-link-btn {
-      background-color: #2e7d32; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 20px; cursor: pointer; margin-top: 8px;
+    .tab-btn.active { background-color: var(--primary-color); color: #fff; }
+
+    .form-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
+      margin-bottom: 20px; background: var(--accent-info); padding: 20px;
+      border-radius: 10px; border: 1px solid var(--border-color);
     }
+
+    .form-group { display: flex; flex-direction: column; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-group label { font-weight: bold; margin-bottom: 6px; font-size: 0.9em; }
+    .form-group input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; }
+
+    .type-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; }
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border: 1px solid var(--border-color); background-color: var(--card-bg);
+      border-radius: 20px; font-size: 0.9em; cursor: pointer;
+    }
+    .type-badge.active { background-color: #28a745; color: #fff; border-color: #28a745; font-weight: bold; }
+
+    .student-list-header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
+      margin-top: 25px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color);
+    }
+
+    .student-row {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 12px; border-bottom: 1px solid var(--border-color); background: var(--card-bg);
+    }
+
+    .status-group { display: flex; gap: 4px; flex-wrap: wrap; }
+    .status-btn { padding: 6px 10px; border: 1px solid var(--border-color); background-color: var(--accent-info); border-radius: 4px; cursor: pointer; font-size: 0.85em; }
+    .status-btn[data-status="全對"].active { background-color: #28a745; color: white; }
+    .status-btn[data-status="欠日期"].active { background-color: #d97706; color: white; }
+    .status-btn[data-status="要改正"].active { background-color: #ffc107; color: black; }
+    .status-btn[data-status="欠交"].active { background-color: #dc3545; color: white; }
+
+    .submit-box { margin-top: 30px; text-align: center; }
+    .submit-btn { background-color: var(--primary-color); color: white; border: none; padding: 14px 40px; font-size: 1.1em; font-weight: bold; border-radius: 30px; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="container">
     <div class="header-bar">
-      <h1>📖 建立範本與部署教學</h1>
-      <button class="nav-btn" onclick="goToHome()">⬅️ 返回主頁登記</button>
+      <h1>📚 班級功課記錄系統</h1>
+      <div class="header-btn-group">
+        <button class="btn-action btn-sheet" onclick="openGoogleSheet()">📊 直達專屬 Google Sheet</button>
+        <button class="btn-action btn-stats" onclick="navigateToPage('stats.html')">📊 欠交日數統計</button>
+        <button class="btn-action btn-tutorial" onclick="navigateToPage('tutorial.html')">📖 建立範本與教學</button>
+        <button class="btn-action btn-reset" onclick="resetSystem()">🔄 重置系統</button>
+      </div>
     </div>
 
-    <div class="template-card">
-      <h2 style="margin:0; color:#234e52;">📋 步驟 1：建立 Google Sheets 試算表範本</h2>
-      <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以複製包含「功課明細」與「欠交統計」兩大工作表的標準系統範本：</p>
-      <a href="https://docs.google.com/spreadsheets/d/1_YOUR_TEMPLATE_ID/copy" target="_blank" class="template-btn">
-        📄 點此建立 Google Sheets 範本副本
-      </a>
+    <div class="system-info-bar">
+      <div>
+        🏫 學年：<strong id="displayYear">2026-2027</strong> | 
+        👨‍🏫 老師代號：<strong id="displayTeacher">-</strong>
+        <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製專屬 Link</button>
+      </div>
+      <div>
+        📘 當前班別/科目：
+        <select id="subjectSelect" onchange="onSubjectChange()" style="padding: 6px 12px; font-weight: bold; border-radius: 6px;">
+          <option value="">(載入中...)</option>
+        </select>
+      </div>
     </div>
 
-    <div class="config-card">
-      <h2>🛠️ 步驟 2：系統連線與設定箱</h2>
-      
+    <div class="tab-group" id="classTabGroup"></div>
+
+    <h3>📝 今日新功課記錄</h3>
+    <div class="form-grid">
       <div class="form-group">
-        <label for="academicYearInput">🏫 當前學年：</label>
-        <input type="text" id="academicYearInput" placeholder="例：2026-2027" oninput="updateSysUrlDisplay()">
+        <label for="issueDate">派發日期：</label>
+        <input type="date" id="issueDate">
       </div>
-
       <div class="form-group">
-        <label for="teacherCodeInput">👨‍🏫 老師代號：</label>
-        <input type="text" id="teacherCodeInput" placeholder="例：T01、LYL" oninput="updateSysUrlDisplay()">
+        <label for="checkDate">批改日期：</label>
+        <input type="date" id="checkDate">
       </div>
-
       <div class="form-group">
-        <label for="apiUrlInput">🔗 Google Apps Script Web App URL：</label>
-        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" oninput="updateSysUrlDisplay()">
+        <label for="pages">頁數：</label>
+        <input type="text" id="pages" placeholder="例：p.12-13">
       </div>
-
       <div class="form-group">
-        <label for="sheetUrlInput">📊 專屬 Google Sheet 試算表網址 (供快捷開啟)：</label>
-        <input type="text" id="sheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/..." oninput="updateSysUrlDisplay()">
+        <label for="questions">題數：</label>
+        <input type="text" id="questions" placeholder="例：Q1-Q5 或 /">
       </div>
 
-      <button class="save-btn" onclick="saveSettings()">💾 儲存系統設定並返回主頁</button>
-
-      <div class="sys-link-card">
-        <strong>📱 你的系統連線專屬 Link (可跨裝置開啟自動載入設定)：</strong><br>
-        <span id="sysUrlDisplay" style="font-size:0.85em; word-break:break-all; color:#1b5e20;">(請先填寫上方 Web App URL)</span><br>
-        <button class="sys-link-btn" onclick="copySystemUrl()">📋 複製帶有連線設定的專屬 Link</button>
+      <div class="form-group full-width">
+        <label>功課種類 (點擊選擇)：</label>
+        <div class="type-buttons" id="typeButtons"></div>
       </div>
+    </div>
+
+    <div class="student-list-header">
+      <h3>學生提交狀態 (班別：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
+      <div>
+        <button onclick="fetchInitialData()">🔄 重新整理名單</button>
+        <button onclick="setAllStatus('全對')">全部設為「全對」</button>
+      </div>
+    </div>
+
+    <div id="studentContainer"></div>
+
+    <div class="submit-box">
+      <button class="submit-btn" id="submitBtn" onclick="submitHomework()">儲存新功課至 Google Sheets</button>
     </div>
   </div>
 
   <script>
-    window.onload = function() {
-      document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
-      document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
-      document.getElementById('apiUrlInput').value = localStorage.getItem('homework_system_api_url') || '';
-      document.getElementById('sheetUrlInput').value = localStorage.getItem('homework_sheet_url') || '';
-      updateSysUrlDisplay();
-    };
+    const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/edit?usp=sharing";
 
-    function getHomePageUrl() {
-      const currentUrl = window.location.href;
-      return currentUrl.includes('tutorial.html') 
-        ? currentUrl.replace('tutorial.html', 'index.html')
-        : currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'index.html';
+    /* 精準跨頁跳轉函數 */
+    function navigateToPage(targetPage) {
+      const currentPath = window.location.pathname;
+      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+      window.location.href = window.location.origin + directory + targetPage;
     }
 
-    function goToHome() { window.location.href = getHomePageUrl(); }
+    function openGoogleSheet() {
+      const sheetUrl = localStorage.getItem('homework_sheet_url') || DEFAULT_SHEET_URL;
+      window.open(sheetUrl, '_blank');
+    }
 
-    function updateSysUrlDisplay() {
-      const indexUrl = getHomePageUrl();
-      const year = encodeURIComponent(document.getElementById('academicYearInput').value.trim() || '2026-2027');
-      const teacher = encodeURIComponent(document.getElementById('teacherCodeInput').value.trim() || '');
-      const api = encodeURIComponent(document.getElementById('apiUrlInput').value.trim());
-      const sheet = encodeURIComponent(document.getElementById('sheetUrlInput').value.trim());
-
-      if (!document.getElementById('apiUrlInput').value.trim()) {
-        document.getElementById('sysUrlDisplay').innerText = "(請先在上方填寫 Web App URL)";
-        return;
+    function resetSystem() {
+      if (confirm('⚠️ 確定要重置系統嗎？這將會清除本地端的設定檔。')) {
+        localStorage.clear();
+        alert('🧹 系統已成功重置！');
+        navigateToPage('index.html');
       }
+    }
 
-      const fullDedicatedUrl = `${indexUrl}?year=${year}&teacher=${teacher}&api=${api}&sheet=${sheet}`;
-      document.getElementById('sysUrlDisplay').innerText = fullDedicatedUrl;
+    function checkAndImportUrlParams() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('api')) localStorage.setItem('homework_system_api_url', urlParams.get('api'));
+      if (urlParams.get('year')) localStorage.setItem('homework_academic_year', urlParams.get('year'));
+      if (urlParams.get('teacher')) localStorage.setItem('homework_teacher_code', urlParams.get('teacher'));
+      if (urlParams.get('sheet')) localStorage.setItem('homework_sheet_url', urlParams.get('sheet'));
+
+      if (urlParams.get('api')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        alert('🎉 已根據專屬 Link 自動載入連線設定！');
+      }
     }
 
     function copySystemUrl() {
-      const displayUrl = document.getElementById('sysUrlDisplay').innerText;
-      if (displayUrl.startsWith('(')) { alert('⚠️ 請先填寫 Web App URL！'); return; }
+      const currentPath = window.location.pathname;
+      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+      const baseUrl = window.location.origin + directory + 'index.html';
 
-      navigator.clipboard.writeText(displayUrl).then(() => {
-        alert('✅ 帶有連線設定與 Google Sheet 連結的專屬 Link 已成功複製！');
-      }).catch(() => { alert('請複製以下專屬網址：\n' + displayUrl); });
+      const api = localStorage.getItem('homework_system_api_url') || '';
+      if (!api) { alert('請先設定 Web App URL！'); return; }
+
+      const year = localStorage.getItem('homework_academic_year') || '2026-2027';
+      const teacher = localStorage.getItem('homework_teacher_code') || '';
+      const sheet = localStorage.getItem('homework_sheet_url') || DEFAULT_SHEET_URL;
+
+      const dedicatedUrl = `${baseUrl}?year=${encodeURIComponent(year)}&teacher=${encodeURIComponent(teacher)}&api=${encodeURIComponent(api)}&sheet=${encodeURIComponent(sheet)}`;
+      navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 專屬 Link 已成功複製！'));
     }
 
-    function saveSettings() {
-      const year = document.getElementById('academicYearInput').value.trim() || '2026-2027';
-      const teacher = document.getElementById('teacherCodeInput').value.trim() || '無代號';
-      const url = document.getElementById('apiUrlInput').value.trim();
-      const sheet = document.getElementById('sheetUrlInput').value.trim();
+    let rawSubjectData = {};
+    let currentSubject = '';
+    let currentClass = '';
+    let selectedType = '工作紙';
+    let studentStates = {};
 
-      if (!url) { alert('請先輸入有效的 Web App URL！'); return; }
+    window.onload = function() {
+      checkAndImportUrlParams();
+      
+      if (!localStorage.getItem('homework_sheet_url')) {
+        localStorage.setItem('homework_sheet_url', DEFAULT_SHEET_URL);
+      }
 
-      localStorage.setItem('homework_academic_year', year);
-      localStorage.setItem('homework_teacher_code', teacher);
-      localStorage.setItem('homework_system_api_url', url);
-      localStorage.setItem('homework_sheet_url', sheet);
+      document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('checkDate').value = new Date().toISOString().split('T')[0];
+      
+      document.getElementById('displayYear').innerText = localStorage.getItem('homework_academic_year') || '2026-2027';
+      document.getElementById('displayTeacher').innerText = localStorage.getItem('homework_teacher_code') || '未設定';
 
-      alert('✅ 設定已成功儲存！即將返回主頁。');
-      goToHome();
+      renderTypeButtons();
+      fetchInitialData();
+    };
+
+    function fetchInitialData() {
+      const apiUrl = localStorage.getItem('homework_system_api_url');
+      if (!apiUrl) return;
+
+      fetch(`${apiUrl}?action=getInitialData`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'success') {
+            rawSubjectData = res.data || {};
+            renderSubjectSelect();
+          }
+        });
+    }
+
+    function renderSubjectSelect() {
+      const select = document.getElementById('subjectSelect');
+      select.innerHTML = '';
+      const subjects = Object.keys(rawSubjectData);
+
+      subjects.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub; opt.innerText = sub;
+        select.appendChild(opt);
+      });
+
+      if (subjects.length > 0) {
+        currentSubject = subjects[0];
+        onSubjectChange();
+      }
+    }
+
+    function onSubjectChange() {
+      currentSubject = document.getElementById('subjectSelect').value;
+      document.getElementById('currentSubjectText').innerText = currentSubject;
+      renderClassTabs();
+    }
+
+    function renderClassTabs() {
+      const tabGroup = document.getElementById('classTabGroup');
+      tabGroup.innerHTML = '';
+
+      const subData = rawSubjectData[currentSubject] || {};
+      const keys = Object.keys(subData);
+
+      const isNumericKeys = keys.length > 0 && keys.every(k => !isNaN(k));
+
+      if (isNumericKeys) {
+        currentClass = currentSubject;
+        renderStudentRowsFromDirectList(subData);
+      } else {
+        keys.forEach(cls => {
+          const btn = document.createElement('button');
+          btn.className = `tab-btn ${cls === currentClass ? 'active' : ''}`;
+          btn.innerText = cls;
+          btn.onclick = () => { currentClass = cls; renderClassTabs(); };
+          tabGroup.appendChild(btn);
+        });
+
+        if (!keys.includes(currentClass)) currentClass = keys[0];
+        renderStudentRows();
+      }
+    }
+
+    function renderStudentRowsFromDirectList(studentMap) {
+      const container = document.getElementById('studentContainer');
+      container.innerHTML = '';
+      studentStates = {};
+
+      Object.keys(studentMap).forEach(id => {
+        const st = studentMap[id];
+        const studentName = typeof st === 'object' ? st.name : st;
+        studentStates[id] = '全對';
+
+        const row = document.createElement('div');
+        row.className = 'student-row';
+        row.innerHTML = `
+          <div><strong>(${id}) ${studentName}</strong></div>
+          <div class="status-group" id="statusGroup_${id}">
+            <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${id}', '全對')">全對</button>
+            <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${id}', '欠日期')">欠日期</button>
+            <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">要改正</button>
+            <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">欠交</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderStudentRows() {
+      const container = document.getElementById('studentContainer');
+      container.innerHTML = '';
+      studentStates = {};
+
+      const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
+      list.forEach(st => {
+        studentStates[st.id] = '全對';
+        const row = document.createElement('div');
+        row.className = 'student-row';
+        row.innerHTML = `
+          <div><strong>(${st.id}) ${st.name}</strong></div>
+          <div class="status-group" id="statusGroup_${st.id}">
+            <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${st.id}', '全對')">全對</button>
+            <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${st.id}', '欠日期')">欠日期</button>
+            <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${st.id}', '要改正')">要改正</button>
+            <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${st.id}', '欠交')">欠交</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function setStudentStatus(id, status) {
+      studentStates[id] = status;
+      const group = document.getElementById(`statusGroup_${id}`);
+      group.querySelectorAll('.status-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-status') === status));
+    }
+
+    function setAllStatus(status) {
+      Object.keys(studentStates).forEach(id => setStudentStatus(id, status));
+    }
+
+    function renderTypeButtons() {
+      const container = document.getElementById('typeButtons');
+      container.innerHTML = '';
+      ['工作紙', '功課冊', '默書', '測驗'].forEach(type => {
+        const badge = document.createElement('div');
+        badge.className = `type-badge ${type === selectedType ? 'active' : ''}`;
+        badge.innerText = type;
+        badge.onclick = () => { selectedType = type; renderTypeButtons(); };
+        container.appendChild(badge);
+      });
+      document.getElementById('currentTypeText').innerText = selectedType;
+    }
+
+    function submitHomework() {
+      const apiUrl = localStorage.getItem('homework_system_api_url');
+      if (!apiUrl) { alert('請先設定 API URL！'); return; }
+
+      const payload = {
+        action: 'saveHomework',
+        payload: {
+          academicYear: localStorage.getItem('homework_academic_year') || '2026-2027',
+          teacherCode: localStorage.getItem('homework_teacher_code') || '',
+          subject: currentSubject,
+          classGroup: currentClass,
+          issueDate: document.getElementById('issueDate').value,
+          checkDate: document.getElementById('checkDate').value,
+          type: selectedType,
+          pages: document.getElementById('pages').value,
+          questions: document.getElementById('questions').value,
+          students: Object.keys(studentStates).map(id => ({ id: id, status: studentStates[id] }))
+        }
+      };
+
+      fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+        .then(() => alert('✅ 功課記錄已成功儲存！'));
     }
   </script>
 </body>
