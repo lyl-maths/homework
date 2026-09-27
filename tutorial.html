@@ -155,14 +155,14 @@
       <h1>📖 建立範本與部署教學</h1>
       <div class="header-btn-group">
         <button class="theme-toggle-btn" onclick="openThemeModal()">🎨 個人化介面</button>
-        <a href="index.html" class="nav-btn">⬅️ 返回主頁登記</a>
+        <button class="nav-btn" onclick="goToHome()">⬅️ 返回主頁登記</button>
       </div>
     </div>
 
     <div class="template-card">
       <h2 style="margin:0; color:#234e52;">📋 步驟 1：建立 Google Sheets 試算表範本</h2>
       <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以複製包含「功課明細」與「欠交統計」兩大工作表的標準系統範本：</p>
-      <a href="https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/copy" target="_blank" class="template-btn">
+      <a href="#" id="templateCopyBtn" target="_blank" class="template-btn">
         📄 點此建立 Google Sheets 範本副本
       </a>
     </div>
@@ -173,26 +173,26 @@
       
       <div class="form-group">
         <label for="academicYearInput">🏫 當前學年：</label>
-        <input type="text" id="academicYearInput" placeholder="例：2026-2027">
+        <input type="text" id="academicYearInput" placeholder="例：2026-2027" oninput="updateSysUrlDisplay()">
       </div>
 
       <div class="form-group">
         <label for="teacherCodeInput">👨‍🏫 老師代號：</label>
-        <input type="text" id="teacherCodeInput" placeholder="例：T01、LYL">
+        <input type="text" id="teacherCodeInput" placeholder="例：T01、LYL" oninput="updateSysUrlDisplay()">
       </div>
 
       <div class="form-group">
         <label for="apiUrlInput">🔗 Google Apps Script Web App URL：</label>
-        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" oninput="updateSysUrlDisplay()">
       </div>
 
       <button class="save-btn" onclick="saveSettings()">💾 儲存系統設定並返回主頁</button>
 
       <!-- 系統專屬 Link 顯示區 -->
       <div class="sys-link-card">
-        <strong>📱 你的系統專屬 Link：</strong><br>
-        <span id="sysUrlDisplay" style="font-size:0.9em; word-break:break-all; color:#1b5e20;">(尚未儲存設定)</span><br>
-        <button class="sys-link-btn" onclick="copySystemUrl()">📋 複製系統獨立 Link (發送至其他裝置)</button>
+        <strong>📱 你的系統連線專屬 Link (可分享至其他裝置)：</strong><br>
+        <span id="sysUrlDisplay" style="font-size:0.85em; word-break:break-all; color:#1b5e20;">(請先填寫上方 Web App URL)</span><br>
+        <button class="sys-link-btn" onclick="copySystemUrl()">📋 複製帶有連線設定的專屬 Link</button>
       </div>
     </div>
 
@@ -214,7 +214,7 @@
     </div>
   </div>
 
-  <!-- 個人化設定 Modal (含特大字體) -->
+  <!-- 個人化設定 Modal -->
   <div class="modal-overlay" id="themeModal">
     <div class="modal-box">
       <button class="modal-close-btn" onclick="closeModal('themeModal')">✖</button>
@@ -240,8 +240,14 @@
   </div>
 
   <script>
+    // ⚠️ 範本試算表副本網址
+    const TEMPLATE_URL = "https://docs.google.com/spreadsheets/d/1_YOUR_TEMPLATE_ID/copy";
+
     window.onload = function() {
       loadPersonalizationSettings();
+
+      const btn = document.getElementById('templateCopyBtn');
+      if (btn) btn.href = TEMPLATE_URL;
 
       document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
@@ -250,18 +256,46 @@
       updateSysUrlDisplay();
     };
 
+    function getHomePageUrl() {
+      const currentUrl = window.location.href;
+      if (currentUrl.includes('tutorial.html')) {
+        return currentUrl.replace('tutorial.html', 'index.html');
+      } else {
+        return currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1) + 'index.html';
+      }
+    }
+
+    function goToHome() {
+      window.location.href = getHomePageUrl();
+    }
+
+    /* 核心生成：帶有輸入參數的專屬連線網址 */
     function updateSysUrlDisplay() {
-      // 取得當前網頁的主頁（index.html）完整網址
-      const indexUrl = window.location.href.replace('tutorial.html', 'index.html');
-      document.getElementById('sysUrlDisplay').innerText = indexUrl;
+      const indexUrl = getHomePageUrl();
+      const year = encodeURIComponent(document.getElementById('academicYearInput').value.trim() || '2026-2027');
+      const teacher = encodeURIComponent(document.getElementById('teacherCodeInput').value.trim() || '');
+      const api = encodeURIComponent(document.getElementById('apiUrlInput').value.trim());
+
+      if (!document.getElementById('apiUrlInput').value.trim()) {
+        document.getElementById('sysUrlDisplay').innerText = "(請先在上方填寫 Web App URL)";
+        return;
+      }
+
+      const fullDedicatedUrl = `${indexUrl}?year=${year}&teacher=${teacher}&api=${api}`;
+      document.getElementById('sysUrlDisplay').innerText = fullDedicatedUrl;
     }
 
     function copySystemUrl() {
-      const indexUrl = window.location.href.replace('tutorial.html', 'index.html');
-      navigator.clipboard.writeText(indexUrl).then(() => {
-        alert('✅ 系統專屬獨立 Link 已成功複製！你可以傳送到手機、平板或其他裝置開啟使用。');
+      const displayUrl = document.getElementById('sysUrlDisplay').innerText;
+      if (displayUrl.startsWith('(')) {
+        alert('⚠️ 請先填寫 Web App URL 才能產生專屬 Link！');
+        return;
+      }
+
+      navigator.clipboard.writeText(displayUrl).then(() => {
+        alert('✅ 帶有連線設定的專屬 Link 已成功複製！你可以發送到手機或 iPad 開啟使用。');
       }).catch(() => {
-        alert('請手動複製網址：\n' + indexUrl);
+        alert('請手動複製網址：\n' + displayUrl);
       });
     }
 
@@ -308,7 +342,7 @@
       localStorage.setItem('homework_system_api_url', url);
 
       alert('✅ 設定已成功儲存！即將返回主頁。');
-      window.location.href = 'index.html';
+      goToHome();
     }
   </script>
 
