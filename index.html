@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>班級功課記錄系統</title>
   <style>
-    /* 1. 全局 CSS 變數與主題 */
     :root {
       --primary-color: #0056b3;
       --bg-color: #f4f7f9;
@@ -126,13 +125,14 @@
         <button class="copy-sys-link-btn" onclick="copySystemUrl()">🔗 複製專屬 Link</button>
       </div>
       <div>
-        📘 當前班別/科目：
+        📘 當前科目：
         <select id="subjectSelect" onchange="onSubjectChange()" style="padding: 6px 12px; font-weight: bold; border-radius: 6px;">
           <option value="">(載入中...)</option>
         </select>
       </div>
     </div>
 
+    <!-- 班別頁籤（4A, 5A） -->
     <div class="tab-group" id="classTabGroup"></div>
 
     <h3>📝 今日新功課記錄</h3>
@@ -161,7 +161,7 @@
     </div>
 
     <div class="student-list-header">
-      <h3>學生提交狀態 (班別：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
+      <h3>學生提交狀態 (當前科目：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 班別：<span id="currentClassText" style="color:var(--primary-color);">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
       <div>
         <button onclick="fetchInitialData()">🔄 重新整理名單</button>
         <button onclick="setAllStatus('全對')">全部設為「全對」</button>
@@ -176,9 +176,6 @@
   </div>
 
   <script>
-    const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/edit?usp=sharing";
-
-    /* 精準跨頁跳轉函數 */
     function navigateToPage(targetPage) {
       const currentPath = window.location.pathname;
       const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
@@ -186,8 +183,12 @@
     }
 
     function openGoogleSheet() {
-      const sheetUrl = localStorage.getItem('homework_sheet_url') || DEFAULT_SHEET_URL;
-      window.open(sheetUrl, '_blank');
+      const sheetUrl = localStorage.getItem('homework_sheet_url');
+      if (sheetUrl && sheetUrl.startsWith('http')) {
+        window.open(sheetUrl, '_blank');
+      } else {
+        alert('⚠️ 尚未獲取專屬 Google Sheet 網址！\n請確認是否已設定正確的 Web App URL。');
+      }
     }
 
     function resetSystem() {
@@ -221,10 +222,10 @@
 
       const year = localStorage.getItem('homework_academic_year') || '2026-2027';
       const teacher = localStorage.getItem('homework_teacher_code') || '';
-      const sheet = localStorage.getItem('homework_sheet_url') || DEFAULT_SHEET_URL;
+      const sheet = localStorage.getItem('homework_sheet_url') || '';
 
       const dedicatedUrl = `${baseUrl}?year=${encodeURIComponent(year)}&teacher=${encodeURIComponent(teacher)}&api=${encodeURIComponent(api)}&sheet=${encodeURIComponent(sheet)}`;
-      navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 專屬 Link 已成功複製！'));
+      navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 帶有專屬 Google Sheet 連結的專屬 Link 已成功複製！'));
     }
 
     let rawSubjectData = {};
@@ -235,10 +236,6 @@
 
     window.onload = function() {
       checkAndImportUrlParams();
-      
-      if (!localStorage.getItem('homework_sheet_url')) {
-        localStorage.setItem('homework_sheet_url', DEFAULT_SHEET_URL);
-      }
 
       document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
       document.getElementById('checkDate').value = new Date().toISOString().split('T')[0];
@@ -259,6 +256,9 @@
         .then(res => {
           if (res.status === 'success') {
             rawSubjectData = res.data || {};
+            if (res.spreadsheetUrl) {
+              localStorage.setItem('homework_sheet_url', res.spreadsheetUrl);
+            }
             renderSubjectSelect();
           }
         });
@@ -291,70 +291,70 @@
       const tabGroup = document.getElementById('classTabGroup');
       tabGroup.innerHTML = '';
 
-      const subData = rawSubjectData[currentSubject] || {};
-      const keys = Object.keys(subData);
+      const classesObj = rawSubjectData[currentSubject] || {};
+      const classList = Object.keys(classesObj);
 
-      const isNumericKeys = keys.length > 0 && keys.every(k => !isNaN(k));
-
-      if (isNumericKeys) {
-        currentClass = currentSubject;
-        renderStudentRowsFromDirectList(subData);
-      } else {
-        keys.forEach(cls => {
-          const btn = document.createElement('button');
-          btn.className = `tab-btn ${cls === currentClass ? 'active' : ''}`;
-          btn.innerText = cls;
-          btn.onclick = () => { currentClass = cls; renderClassTabs(); };
-          tabGroup.appendChild(btn);
-        });
-
-        if (!keys.includes(currentClass)) currentClass = keys[0];
-        renderStudentRows();
+      if (classList.length === 0) {
+        tabGroup.innerHTML = '<div style="color:#888;">該科目無班別紀錄。</div>';
+        return;
       }
-    }
 
-    function renderStudentRowsFromDirectList(studentMap) {
-      const container = document.getElementById('studentContainer');
-      container.innerHTML = '';
-      studentStates = {};
-
-      Object.keys(studentMap).forEach(id => {
-        const st = studentMap[id];
-        const studentName = typeof st === 'object' ? st.name : st;
-        studentStates[id] = '全對';
-
-        const row = document.createElement('div');
-        row.className = 'student-row';
-        row.innerHTML = `
-          <div><strong>(${id}) ${studentName}</strong></div>
-          <div class="status-group" id="statusGroup_${id}">
-            <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${id}', '全對')">全對</button>
-            <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${id}', '欠日期')">欠日期</button>
-            <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">要改正</button>
-            <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">欠交</button>
-          </div>
-        `;
-        container.appendChild(row);
+      classList.forEach(className => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${className === currentClass ? 'active' : ''}`;
+        btn.innerText = className;
+        btn.onclick = () => switchClass(className);
+        tabGroup.appendChild(btn);
       });
+
+      if (!currentClass || !classList.includes(currentClass)) {
+        currentClass = classList[0];
+      }
+
+      switchClass(currentClass);
     }
 
+    function switchClass(className) {
+      currentClass = className;
+      document.getElementById('currentClassText').innerText = className;
+
+      const tabGroup = document.getElementById('classTabGroup');
+      tabGroup.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText === className);
+      });
+
+      renderStudentRows();
+    }
+
+    /* 解決 undefined 核心渲染邏輯 */
     function renderStudentRows() {
       const container = document.getElementById('studentContainer');
       container.innerHTML = '';
       studentStates = {};
 
       const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
-      list.forEach(st => {
-        studentStates[st.id] = '全對';
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">該班別暫無學生名單。</div>';
+        return;
+      }
+
+      list.forEach(student => {
+        // 安全提取學號與姓名
+        const id = typeof student === 'object' ? student.id : student;
+        const name = typeof student === 'object' ? student.name : student;
+
+        studentStates[id] = '全對';
+
         const row = document.createElement('div');
         row.className = 'student-row';
         row.innerHTML = `
-          <div><strong>(${st.id}) ${st.name}</strong></div>
-          <div class="status-group" id="statusGroup_${st.id}">
-            <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${st.id}', '全對')">全對</button>
-            <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${st.id}', '欠日期')">欠日期</button>
-            <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${st.id}', '要改正')">要改正</button>
-            <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${st.id}', '欠交')">欠交</button>
+          <div><strong>(${id}) ${name}</strong></div>
+          <div class="status-group" id="statusGroup_${id}">
+            <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${id}', '全對')">全對</button>
+            <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${id}', '欠日期')">欠日期</button>
+            <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">要改正</button>
+            <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">欠交</button>
           </div>
         `;
         container.appendChild(row);
