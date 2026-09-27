@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>建立範本與部署教學 - 班級功課記錄系統</title>
   <style>
-    /* 1. 全局 CSS 變數與主題設定 */
     :root {
       --primary-color: #0056b3;
       --bg-color: #f4f7f9;
@@ -93,8 +92,8 @@
 
     <div class="template-card">
       <h2 style="margin:0; color:#234e52;">📋 步驟 1：建立 Google Sheets 試算表範本</h2>
-      <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以建立專屬的「功課明細」與「欠交統計」試算表副本：</p>
-      <a href="https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/copy" target="_blank" class="template-btn">
+      <p style="margin: 8px 0; color:#4a5568; font-size: 0.95em;">點擊下方按鈕以複製個人專屬的「功課明細」與「欠交統計」試算表副本：</p>
+      <a href="https://docs.google.com/spreadsheets/d/1adJl9KBopheSTd9ArqHPQw3HBaAkuDrzmUomjyEPuE8/copy" target="_blank" rel="noopener noreferrer" class="template-btn">
         📄 點此建立 Google Sheets 範本副本
       </a>
     </div>
@@ -109,8 +108,8 @@
       </div>
 
       <div class="form-group">
-        <label for="teacherCodeInput">👨‍🏫 老師代號：</label>
-        <input type="text" id="teacherCodeInput" placeholder="例：T01、LYL" oninput="updateSysUrlDisplay()">
+        <label for="teacherCodeInput">👨‍🏫 老師代號 (例如：T01、ChanSir)：</label>
+        <input type="text" id="teacherCodeInput" placeholder="請輸入你的老師代號" oninput="updateSysUrlDisplay()">
       </div>
 
       <div class="form-group">
@@ -118,9 +117,8 @@
         <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" oninput="updateSysUrlDisplay()">
       </div>
 
-      <button class="save-btn" onclick="saveSettings()">💾 儲存系統設定並自動取得專屬 Sheet</button>
+      <button class="save-btn" onclick="saveSettings()">💾 儲存系統設定並自動重命名專屬 Sheet</button>
 
-      <!-- 系統專屬 Link 顯示區 -->
       <div class="sys-link-card">
         <strong>📱 你的系統連線專屬 Link (可分享至其他裝置自動帶入設定)：</strong><br>
         <span id="sysUrlDisplay" style="font-size:0.85em; word-break:break-all; color:#1b5e20;">(請先填寫上方 Web App URL)</span><br>
@@ -148,6 +146,7 @@
 
   <script>
     window.onload = function() {
+      // 讀取老師自己之前儲存的設定，沒有則留空讓老師自行輸入
       document.getElementById('academicYearInput').value = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('teacherCodeInput').value = localStorage.getItem('homework_teacher_code') || '';
       document.getElementById('apiUrlInput').value = localStorage.getItem('homework_system_api_url') || '';
@@ -155,12 +154,10 @@
       updateSysUrlDisplay();
     };
 
-    /* 強制且乾淨地重定向回到 index.html */
     function navigateToHome() {
       const currentPath = window.location.pathname;
       const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      const homeUrl = window.location.origin + directory + 'index.html';
-      window.location.replace(homeUrl);
+      window.location.replace(window.location.origin + directory + 'index.html');
     }
 
     function updateSysUrlDisplay() {
@@ -198,32 +195,40 @@
 
     function saveSettings() {
       const year = document.getElementById('academicYearInput').value.trim() || '2026-2027';
-      const teacher = document.getElementById('teacherCodeInput').value.trim() || '無代號';
+      const teacher = document.getElementById('teacherCodeInput').value.trim();
       const url = document.getElementById('apiUrlInput').value.trim();
 
-      if (!url) {
-        alert('請先輸入有效的 Web App URL！');
+      if (!teacher) {
+        alert('⚠️ 請輸入你的老師代號（例如：T01、ChanSir）！');
         return;
       }
 
+      if (!url) {
+        alert('⚠️ 請輸入有效的 Web App URL！');
+        return;
+      }
+
+      // 儲存該位老師專屬輸入的學年與代號
       localStorage.setItem('homework_academic_year', year);
       localStorage.setItem('homework_teacher_code', teacher);
       localStorage.setItem('homework_system_api_url', url);
 
-      // 自動測試連線並獲取該位老師專屬的 Google Sheet 網址
-      fetch(`${url}?action=getInitialData`)
+      // 動態將老師填入的 teacher 變數帶入 API 請求發送給後端
+      const testApiUrl = `${url}?action=getInitialData&academicYear=${encodeURIComponent(year)}&teacherCode=${encodeURIComponent(teacher)}`;
+
+      fetch(testApiUrl)
         .then(res => res.json())
         .then(res => {
           if (res.spreadsheetUrl) {
             localStorage.setItem('homework_sheet_url', res.spreadsheetUrl);
-            alert('✅ 設定成功！已自動取得你的個人專屬 Google Sheet 網址，即將返回主頁。');
+            alert(`✅ 連線成功！你的 Google Sheet 已根據輸入自動重命名為：\n【${year}】班級功課記錄系統 (${teacher})`);
           } else {
             alert('✅ 設定已成功儲存！即將返回主頁。');
           }
           navigateToHome();
         })
         .catch(() => {
-          alert('⚠️ 設定已儲存，但測試連線失敗，請檢查 Web App URL 是否正確且權限設定為「任何人」。');
+          alert('⚠️ 設定已儲存，但測試連線失敗，請檢查 Web App URL 是否權限設定為「任何人」。');
           navigateToHome();
         });
     }
