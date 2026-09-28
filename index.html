@@ -35,14 +35,14 @@
     .header-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 15px; }
     h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
 
-    .header-btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .header-btn-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 
     .btn-action {
       padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9em;
       cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; border: none; color: white;
     }
 
-    .btn-theme { background-color: var(--primary-color); }
+    .btn-theme { background-color: var(--primary-color); padding: 6px 10px; font-size: 1.1em; border-radius: 50%; }
     .btn-sheet { background-color: #1d6f42; }
     .btn-stats { background-color: #d9480f; }
     .btn-tutorial { background-color: #319795; }
@@ -110,7 +110,6 @@
       display: inline-flex; align-items: center; gap: 8px; background: #fff8e1;
       border: 1px solid #ffe082; padding: 6px 12px; border-radius: 8px; font-size: 0.88em; margin-right: 10px;
     }
-
     .prev-record-text { color: #d9534f; font-weight: bold; }
 
     .fix-btn-group { display: inline-flex; gap: 4px; margin-left: 6px; }
@@ -122,43 +121,29 @@
     .fix-btn.active[data-fix="欠改正"] { background-color: #e65100; color: white; border-color: #e65100; }
     .fix-btn.active[data-fix="已完成改正"] { background-color: #28a745; color: white; border-color: #28a745; }
 
-    .status-group { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-    .status-btn { padding: 6px 10px; border: 1px solid var(--border-color); background-color: var(--accent-info); border-radius: 4px; cursor: pointer; font-size: 0.85em; }
-    .status-btn[data-status="全對"].active { background-color: #28a745; color: white; }
-    .status-btn[data-status="欠日期"].active { background-color: #d97706; color: white; }
-    .status-btn[data-status="要改正"].active { background-color: #ffc107; color: black; }
-    .status-btn[data-status="欠交"].active { background-color: #dc3545; color: white; }
-    .status-btn[data-status="缺席"].active { background-color: #6c757d; color: white; }
-    .status-btn[data-status="申請延期"].active { background-color: #6f42c1; color: white; }
+    .status-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    
+    /* 圖標化按鈕 */
+    .status-btn { padding: 6px 12px; border: 1px solid var(--border-color); background-color: var(--accent-info); border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+    .status-btn[data-status="全對"].active { background-color: #28a745; color: white; border-color: #28a745; }
+    .status-btn[data-status="欠交"].active { background-color: #dc3545; color: white; border-color: #dc3545; }
+    .status-btn[data-status="要改正"].active { background-color: #ffc107; color: black; border-color: #ffc107; }
+    .status-btn[data-status="缺席"].active { background-color: #6c757d; color: white; border-color: #6c757d; }
+    .status-btn[data-status="申請延期"].active { background-color: #6f42c1; color: white; border-color: #6f42c1; }
+
+    /* 獨立欠日期切換按鈕 (可同時多選) */
+    .date-issue-btn { padding: 6px 12px; border: 1px dashed #d97706; background-color: var(--card-bg); color: #d97706; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+    .date-issue-btn.active { background-color: #d97706; color: white; border-style: solid; border-color: #d97706; }
 
     .submit-box { margin-top: 30px; text-align: center; }
     .submit-btn { background-color: var(--primary-color); color: white; border: none; padding: 14px 40px; font-size: 1.1em; font-weight: bold; border-radius: 30px; cursor: pointer; }
 
     /* Modal */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
-    }
-    .modal-box {
-      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
-    }
-
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-box { background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color); }
     .option-btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
-    .option-btn {
-      padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg);
-      color: var(--text-color); border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center;
-      transition: all 0.2s;
-    }
-    .option-btn:hover { border-color: var(--primary-color); }
+    .option-btn { padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center; transition: all 0.2s; }
     .option-btn.active { border-color: var(--primary-color); background-color: var(--primary-color); color: white; }
-
-    .color-btn[data-theme="blue"] { border-color: #0056b3; }
-    .color-btn[data-theme="orange"] { border-color: #e65100; }
-    .color-btn[data-theme="yellow"] { border-color: #f57f17; }
-    .color-btn[data-theme="green"] { border-color: #2e7d32; }
-    .color-btn[data-theme="black"] { border-color: #333333; }
-    .color-btn[data-theme="purple"] { border-color: #6f42c1; }
   </style>
 </head>
 <body>
@@ -167,11 +152,11 @@
     <div class="header-bar">
       <h1>📚 班級功課記錄系統</h1>
       <div class="header-btn-group">
-        <button class="btn-action btn-theme" onclick="openThemeModal()">🎨 個人化介面</button>
-        <button class="btn-action btn-sheet" onclick="openGoogleSheet()">📊 專屬 Google Sheet</button>
-        <button class="btn-action btn-stats" onclick="navigateToPage('stats.html')">📊 欠交日數統計</button>
-        <button class="btn-action btn-tutorial" onclick="navigateToPage('tutorial.html')">📖 建立範本與教學</button>
-        <button class="btn-action btn-reset" onclick="resetSystem()">🔄 重置系統</button>
+        <button class="btn-action btn-theme" onclick="openThemeModal()" title="個人化介面">⚙️</button>
+        <button class="btn-action btn-sheet" onclick="openGoogleSheet()">📊 Google Sheet</button>
+        <button class="btn-action btn-stats" onclick="navigateToPage('stats.html')">📊 統計</button>
+        <button class="btn-action btn-tutorial" onclick="navigateToPage('tutorial.html')">📖 教學</button>
+        <button class="btn-action btn-reset" onclick="resetSystem()">🔄 重置</button>
       </div>
     </div>
 
@@ -211,20 +196,20 @@
       </div>
 
       <div class="form-group full-width">
-        <label>功課種類 (由 Google Sheet「功課種類」分頁自動載入，點擊選擇)：</label>
+        <label>功課種類 (點擊選取)：</label>
         <div class="type-buttons" id="typeButtons"></div>
       </div>
     </div>
 
     <div class="start-grading-box">
-      <button class="start-grading-btn" id="startGradingBtn" onclick="startGrading()">🔍 開始批改 (載入上一次同類功課跟進紀錄)</button>
+      <button class="start-grading-btn" id="startGradingBtn" onclick="startGrading()">🔍 載入上次跟進紀錄</button>
     </div>
 
     <div class="student-list-header">
-      <h3>學生提交狀態 (當前科目：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 班別：<span id="currentClassText" style="color:var(--primary-color);">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
+      <h3>學生狀態 (科目：<span id="currentSubjectText" style="color:var(--primary-color);">-</span> | 班別：<span id="currentClassText" style="color:var(--primary-color);">-</span> | 功課：<span id="currentTypeText" style="color:#28a745;">-</span>)</h3>
       <div>
-        <button onclick="fetchInitialData()">🔄 重新整理名單</button>
-        <button onclick="setAllStatus('全對')">全部設為「全對」</button>
+        <button onclick="fetchInitialData()">🔄 重新整理</button>
+        <button onclick="setAllStatus('全對')">全部設為 ✅ 全對</button>
       </div>
     </div>
 
@@ -239,12 +224,12 @@
   <div class="modal-overlay" id="themeModal">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0;">🎨 個人化介面設定</h3>
+        <h3 style="margin:0;">⚙️ 個人化介面設定</h3>
         <span onclick="closeThemeModal()" style="cursor:pointer; font-weight:bold;">✕</span>
       </div>
 
       <div style="margin-bottom:20px;">
-        <label style="font-weight:bold;">🎨 點擊按鈕選取主題顏色：</label>
+        <label style="font-weight:bold;">🎨 顏色主題：</label>
         <div class="option-btn-grid" id="colorBtnGroup">
           <button class="option-btn color-btn" data-theme="blue" onclick="selectThemeBtn('blue')">💙 藍色</button>
           <button class="option-btn color-btn" data-theme="orange" onclick="selectThemeBtn('orange')">🧡 橙色</button>
@@ -256,16 +241,16 @@
       </div>
 
       <div style="margin-bottom:25px;">
-        <label style="font-weight:bold;">🔤 點擊按鈕選取字體大小：</label>
+        <label style="font-weight:bold;">🔤 字體大小：</label>
         <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
           <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
           <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
-          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大字體 (18px)</button>
-          <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大字體 (21px)</button>
+          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大 (18px)</button>
+          <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大 (21px)</button>
         </div>
       </div>
 
-      <button onclick="saveThemeSettings()" style="width:100%; padding:12px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold; font-size:1.05em; cursor:pointer;">💾 儲存並套用設定</button>
+      <button onclick="saveThemeSettings()" style="width:100%; padding:12px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold; font-size:1.05em; cursor:pointer;">💾 儲存設定</button>
     </div>
   </div>
 
@@ -277,137 +262,67 @@
       const theme = localStorage.getItem('homework_theme') || 'blue';
       const fontSize = localStorage.getItem('homework_font_size') || '15px';
       const root = document.documentElement;
-
       root.style.setProperty('--base-font-size', fontSize);
 
       if (theme === 'orange') {
-        root.style.setProperty('--primary-color', '#e65100');
-        root.style.setProperty('--bg-color', '#fff3e0');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#3e2723');
-        root.style.setProperty('--border-color', '#ffe0b2');
-        root.style.setProperty('--accent-info', '#fff8e1');
+        root.style.setProperty('--primary-color', '#e65100'); root.style.setProperty('--bg-color', '#fff3e0'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#3e2723'); root.style.setProperty('--border-color', '#ffe0b2'); root.style.setProperty('--accent-info', '#fff8e1');
       } else if (theme === 'yellow') {
-        root.style.setProperty('--primary-color', '#f57f17');
-        root.style.setProperty('--bg-color', '#fffde7');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#332701');
-        root.style.setProperty('--border-color', '#fff9c4');
-        root.style.setProperty('--accent-info', '#fffde7');
+        root.style.setProperty('--primary-color', '#f57f17'); root.style.setProperty('--bg-color', '#fffde7'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#332701'); root.style.setProperty('--border-color', '#fff9c4'); root.style.setProperty('--accent-info', '#fffde7');
       } else if (theme === 'green') {
-        root.style.setProperty('--primary-color', '#2e7d32');
-        root.style.setProperty('--bg-color', '#f1f8e9');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#1b5e20');
-        root.style.setProperty('--border-color', '#c8e6c9');
-        root.style.setProperty('--accent-info', '#e8f5e9');
+        root.style.setProperty('--primary-color', '#2e7d32'); root.style.setProperty('--bg-color', '#f1f8e9'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#1b5e20'); root.style.setProperty('--border-color', '#c8e6c9'); root.style.setProperty('--accent-info', '#e8f5e9');
       } else if (theme === 'black') {
-        root.style.setProperty('--primary-color', '#4dabf7');
-        root.style.setProperty('--bg-color', '#121212');
-        root.style.setProperty('--card-bg', '#1e1e1e');
-        root.style.setProperty('--text-color', '#e0e0e0');
-        root.style.setProperty('--border-color', '#444444');
-        root.style.setProperty('--accent-info', '#2a2a2a');
+        root.style.setProperty('--primary-color', '#4dabf7'); root.style.setProperty('--bg-color', '#121212'); root.style.setProperty('--card-bg', '#1e1e1e'); root.style.setProperty('--text-color', '#e0e0e0'); root.style.setProperty('--border-color', '#444444'); root.style.setProperty('--accent-info', '#2a2a2a');
       } else if (theme === 'purple') {
-        root.style.setProperty('--primary-color', '#6f42c1');
-        root.style.setProperty('--bg-color', '#f3e8ff');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#3b0764');
-        root.style.setProperty('--border-color', '#d8b4fe');
-        root.style.setProperty('--accent-info', '#faf5ff');
+        root.style.setProperty('--primary-color', '#6f42c1'); root.style.setProperty('--bg-color', '#f3e8ff'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#3b0764'); root.style.setProperty('--border-color', '#d8b4fe'); root.style.setProperty('--accent-info', '#faf5ff');
       } else {
-        root.style.setProperty('--primary-color', '#0056b3');
-        root.style.setProperty('--bg-color', '#f4f7f9');
-        root.style.setProperty('--card-bg', '#ffffff');
-        root.style.setProperty('--text-color', '#333333');
-        root.style.setProperty('--border-color', '#cccccc');
-        root.style.setProperty('--accent-info', '#f0f7ff');
+        root.style.setProperty('--primary-color', '#0056b3'); root.style.setProperty('--bg-color', '#f4f7f9'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#333333'); root.style.setProperty('--border-color', '#cccccc'); root.style.setProperty('--accent-info', '#f0f7ff');
       }
     }
 
     function openThemeModal() {
       tempSelectedTheme = localStorage.getItem('homework_theme') || 'blue';
       tempSelectedFont = localStorage.getItem('homework_font_size') || '15px';
-      selectThemeBtn(tempSelectedTheme);
-      selectFontBtn(tempSelectedFont);
+      selectThemeBtn(tempSelectedTheme); selectFontBtn(tempSelectedFont);
       document.getElementById('themeModal').style.display = 'flex';
     }
-
     function selectThemeBtn(theme) {
       tempSelectedTheme = theme;
-      document.querySelectorAll('#colorBtnGroup .option-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
-      });
+      document.querySelectorAll('#colorBtnGroup .option-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-theme') === theme));
     }
-
     function selectFontBtn(size) {
       tempSelectedFont = size;
-      document.querySelectorAll('#fontBtnGroup .option-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-size') === size);
-      });
+      document.querySelectorAll('#fontBtnGroup .option-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-size') === size));
     }
-
-    function closeThemeModal() {
-      document.getElementById('themeModal').style.display = 'none';
-    }
-
-    function saveThemeSettings() {
-      localStorage.setItem('homework_theme', tempSelectedTheme);
-      localStorage.setItem('homework_font_size', tempSelectedFont);
-      applySavedTheme();
-      closeThemeModal();
-    }
+    function closeThemeModal() { document.getElementById('themeModal').style.display = 'none'; }
+    function saveThemeSettings() { localStorage.setItem('homework_theme', tempSelectedTheme); localStorage.setItem('homework_font_size', tempSelectedFont); applySavedTheme(); closeThemeModal(); }
 
     function navigateToPage(targetPage) {
-      const currentPath = window.location.pathname;
-      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      window.location.href = window.location.origin + directory + targetPage;
+      const cur = window.location.pathname;
+      window.location.href = window.location.origin + cur.substring(0, cur.lastIndexOf('/') + 1) + targetPage;
     }
-
     function openGoogleSheet() {
-      const sheetUrl = localStorage.getItem('homework_sheet_url');
-      if (sheetUrl && sheetUrl.startsWith('http')) {
-        window.open(sheetUrl, '_blank');
-      } else {
-        alert('⚠️ 尚未獲取專屬 Google Sheet 網址！\n請確認是否已設定正確的 Web App URL。');
-      }
+      const url = localStorage.getItem('homework_sheet_url');
+      if (url && url.startsWith('http')) window.open(url, '_blank');
+      else alert('⚠️ 尚未獲取專屬 Google Sheet 網址！');
     }
-
     function resetSystem() {
-      if (confirm('⚠️ 確定要重置系統嗎？這將會清除本地端的設定檔。')) {
-        localStorage.clear();
-        alert('🧹 系統已成功重置！');
-        navigateToPage('index.html');
-      }
+      if (confirm('⚠️ 確定重置系統嗎？')) { localStorage.clear(); alert('🧹 已重置！'); navigateToPage('index.html'); }
     }
-
     function checkAndImportUrlParams() {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('api')) localStorage.setItem('homework_system_api_url', urlParams.get('api'));
-      if (urlParams.get('year')) localStorage.setItem('homework_academic_year', urlParams.get('year'));
-      if (urlParams.get('teacher')) localStorage.setItem('homework_teacher_code', urlParams.get('teacher'));
-      if (urlParams.get('sheet')) localStorage.setItem('homework_sheet_url', urlParams.get('sheet'));
-
-      if (urlParams.get('api')) {
-        window.history.replaceState({}, document.title, window.location.pathname);
-        alert('🎉 已根據專屬 Link 自動載入連線設定！');
-      }
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('api')) localStorage.setItem('homework_system_api_url', p.get('api'));
+      if (p.get('year')) localStorage.setItem('homework_academic_year', p.get('year'));
+      if (p.get('teacher')) localStorage.setItem('homework_teacher_code', p.get('teacher'));
+      if (p.get('sheet')) localStorage.setItem('homework_sheet_url', p.get('sheet'));
+      if (p.get('api')) { window.history.replaceState({}, document.title, window.location.pathname); alert('🎉 已自動載入連線設定！'); }
     }
-
     function copySystemUrl() {
-      const currentPath = window.location.pathname;
-      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      const baseUrl = window.location.origin + directory + 'index.html';
-
+      const cur = window.location.pathname;
+      const baseUrl = window.location.origin + cur.substring(0, cur.lastIndexOf('/') + 1) + 'index.html';
       const api = localStorage.getItem('homework_system_api_url') || '';
-      if (!api) { alert('請先設定 Web App URL！'); return; }
-
-      const year = localStorage.getItem('homework_academic_year') || '2026-2027';
-      const teacher = localStorage.getItem('homework_teacher_code') || '';
-      const sheet = localStorage.getItem('homework_sheet_url') || '';
-
-      const dedicatedUrl = `${baseUrl}?year=${encodeURIComponent(year)}&teacher=${encodeURIComponent(teacher)}&api=${encodeURIComponent(api)}&sheet=${encodeURIComponent(sheet)}`;
-      navigator.clipboard.writeText(dedicatedUrl).then(() => alert('✅ 帶有專屬 Google Sheet 連結的專屬 Link 已成功複製！'));
+      if (!api) { alert('請先設定 API URL！'); return; }
+      const u = `${baseUrl}?year=${encodeURIComponent(localStorage.getItem('homework_academic_year')||'2026-2027')}&teacher=${encodeURIComponent(localStorage.getItem('homework_teacher_code')||'')}&api=${encodeURIComponent(api)}&sheet=${encodeURIComponent(localStorage.getItem('homework_sheet_url')||'')}`;
+      navigator.clipboard.writeText(u).then(() => alert('✅ 專屬 Link 已複製！'));
     }
 
     let typesBySubjectMap = {};
@@ -419,242 +334,151 @@
       selectedType = customHomeworkTypes.length > 0 ? customHomeworkTypes[0] : '';
       renderTypeButtons();
     }
-
     function renderTypeButtons() {
-      const container = document.getElementById('typeButtons');
-      container.innerHTML = '';
-
-      if (customHomeworkTypes.length === 0) {
-        container.innerHTML = '<span style="color:#888;">⚠️ 請在 Google Sheet「功課種類」分頁新增此科目的功課項目。</span>';
-        return;
-      }
-
-      customHomeworkTypes.forEach(type => {
-        const badge = document.createElement('div');
-        badge.className = `type-badge ${type === selectedType ? 'active' : ''}`;
-        badge.innerText = type;
-        badge.onclick = () => selectType(type);
-        container.appendChild(badge);
+      const c = document.getElementById('typeButtons'); c.innerHTML = '';
+      if (customHomeworkTypes.length === 0) { c.innerHTML = '<span style="color:#888;">⚠️ 請在 Google Sheet 新增此科目的功課項目。</span>'; return; }
+      customHomeworkTypes.forEach(t => {
+        const b = document.createElement('div');
+        b.className = `type-badge ${t === selectedType ? 'active' : ''}`;
+        b.innerText = t; b.onclick = () => { selectedType = t; renderTypeButtons(); };
+        c.appendChild(b);
       });
-
       document.getElementById('currentTypeText').innerText = selectedType || '未選擇';
     }
 
-    function selectType(type) {
-      selectedType = type;
-      renderTypeButtons();
-    }
-
-    let rawSubjectData = {};
-    let currentSubject = '';
-    let currentClass = '';
-    let studentStates = {};
-    let pendingRecordsMap = {};
-    let correctionUpdates = {};
+    let rawSubjectData = {}, currentSubject = '', currentClass = '';
+    let studentStates = {}, studentDateIssues = {};
+    let pendingRecordsMap = {}, correctionUpdates = {};
 
     window.onload = function() {
-      applySavedTheme();
-      checkAndImportUrlParams();
-
+      applySavedTheme(); checkAndImportUrlParams();
       document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
       document.getElementById('checkDate').value = new Date().toISOString().split('T')[0];
-      
       document.getElementById('displayYear').innerText = localStorage.getItem('homework_academic_year') || '2026-2027';
       document.getElementById('displayTeacher').innerText = localStorage.getItem('homework_teacher_code') || '未設定';
-
       fetchInitialData();
     };
 
     function fetchInitialData() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
       if (!apiUrl) return;
-
-      const year = localStorage.getItem('homework_academic_year') || '2026-2027';
-      const teacher = localStorage.getItem('homework_teacher_code') || '';
-
-      const requestUrl = `${apiUrl}?action=getInitialData&academicYear=${encodeURIComponent(year)}&teacherCode=${encodeURIComponent(teacher)}`;
-
-      fetch(requestUrl)
+      fetch(`${apiUrl}?action=getInitialData&academicYear=${encodeURIComponent(localStorage.getItem('homework_academic_year')||'2026-2027')}&teacherCode=${encodeURIComponent(localStorage.getItem('homework_teacher_code')||'')}`)
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
             rawSubjectData = res.data || {};
             typesBySubjectMap = res.typesBySubject || {};
-            if (res.spreadsheetUrl) {
-              localStorage.setItem('homework_sheet_url', res.spreadsheetUrl);
-            }
+            if (res.spreadsheetUrl) localStorage.setItem('homework_sheet_url', res.spreadsheetUrl);
             renderSubjectSelect();
           }
         });
     }
 
     function renderSubjectSelect() {
-      const select = document.getElementById('subjectSelect');
-      select.innerHTML = '';
-      const subjects = Object.keys(rawSubjectData);
-
-      subjects.forEach(sub => {
-        const opt = document.createElement('option');
-        opt.value = sub; opt.innerText = sub;
-        select.appendChild(opt);
+      const s = document.getElementById('subjectSelect'); s.innerHTML = '';
+      Object.keys(rawSubjectData).forEach(sub => {
+        const opt = document.createElement('option'); opt.value = sub; opt.innerText = sub; s.appendChild(opt);
       });
-
-      if (subjects.length > 0) {
-        currentSubject = subjects[0];
-        onSubjectChange();
-      }
+      if (Object.keys(rawSubjectData).length > 0) { currentSubject = Object.keys(rawSubjectData)[0]; onSubjectChange(); }
     }
 
     function onSubjectChange() {
       currentSubject = document.getElementById('subjectSelect').value;
       document.getElementById('currentSubjectText').innerText = currentSubject;
-      
-      loadHomeworkTypesForSubject();
-      renderClassTabs();
+      loadHomeworkTypesForSubject(); renderClassTabs();
     }
 
     function renderClassTabs() {
-      const tabGroup = document.getElementById('classTabGroup');
-      tabGroup.innerHTML = '';
-
-      const classesObj = rawSubjectData[currentSubject] || {};
-      const classList = Object.keys(classesObj);
-
-      if (classList.length === 0) {
-        tabGroup.innerHTML = '<div style="color:#888;">該科目無班別紀錄。</div>';
-        return;
-      }
-
-      classList.forEach(className => {
-        const btn = document.createElement('button');
-        btn.className = `tab-btn ${className === currentClass ? 'active' : ''}`;
-        btn.innerText = className;
-        btn.onclick = () => switchClass(className);
-        tabGroup.appendChild(btn);
+      const tg = document.getElementById('classTabGroup'); tg.innerHTML = '';
+      const list = Object.keys(rawSubjectData[currentSubject] || {});
+      list.forEach(cls => {
+        const b = document.createElement('button'); b.className = `tab-btn ${cls === currentClass ? 'active' : ''}`; b.innerText = cls;
+        b.onclick = () => switchClass(cls); tg.appendChild(b);
       });
-
-      if (!currentClass || !classList.includes(currentClass)) {
-        currentClass = classList[0];
-      }
-
+      if (!currentClass || !list.includes(currentClass)) currentClass = list[0];
       switchClass(currentClass);
     }
 
-    function switchClass(className) {
-      currentClass = className;
-      document.getElementById('currentClassText').innerText = className;
-
-      const tabGroup = document.getElementById('classTabGroup');
-      tabGroup.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText === className);
-      });
-
-      pendingRecordsMap = {};
-      correctionUpdates = {};
-      renderStudentRows();
+    function switchClass(cls) {
+      currentClass = cls; document.getElementById('currentClassText').innerText = cls;
+      document.querySelectorAll('#classTabGroup .tab-btn').forEach(b => b.classList.toggle('active', b.innerText === cls));
+      pendingRecordsMap = {}; correctionUpdates = {}; renderStudentRows();
     }
 
     function startGrading() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
       if (!apiUrl) { alert('請先設定 API URL！'); return; }
       if (!selectedType) { alert('請先選擇功課種類！'); return; }
-
-      const gradingBtn = document.getElementById('startGradingBtn');
-      gradingBtn.disabled = true;
-      gradingBtn.innerText = '⏳ 載入中 Loading...';
-
+      const btn = document.getElementById('startGradingBtn'); btn.disabled = true; btn.innerText = '⏳ 載入中...';
       fetch(`${apiUrl}?action=getPendingCorrections&subject=${encodeURIComponent(currentSubject)}&classGroup=${encodeURIComponent(currentClass)}&type=${encodeURIComponent(selectedType)}`)
         .then(res => res.json())
         .then(res => {
-          gradingBtn.disabled = false;
-          gradingBtn.innerText = '🔍 開始批改 (載入上一次同類功課跟進紀錄)';
-
-          if (res.status === 'success') {
-            pendingRecordsMap = res.data || {};
-            correctionUpdates = {};
-            renderStudentRows();
-            alert(`✅ 已為【${currentSubject}】的「${selectedType}」成功載入上一次跟進紀錄！`);
-          }
-        })
-        .catch(() => {
-          gradingBtn.disabled = false;
-          gradingBtn.innerText = '🔍 開始批改 (載入上一次同類功課跟進紀錄)';
-          alert('⚠️ 載入失敗，請重新嘗試。');
-        });
+          btn.disabled = false; btn.innerText = '🔍 載入上次跟進紀錄';
+          if (res.status === 'success') { pendingRecordsMap = res.data || {}; correctionUpdates = {}; renderStudentRows(); alert(`✅ 已載入紀錄！`); }
+        }).catch(() => { btn.disabled = false; btn.innerText = '🔍 載入上次跟進紀錄'; alert('⚠️ 載入失敗'); });
     }
 
     function setFixStatus(studentId, rowIndex, fixStatus) {
-      if (fixStatus) {
-        correctionUpdates[rowIndex] = fixStatus;
-      } else {
-        delete correctionUpdates[rowIndex];
-      }
-
-      const group = document.getElementById(`fixGroup_${studentId}`);
-      if (group) {
-        group.querySelectorAll('.fix-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.getAttribute('data-fix') === fixStatus);
-        });
-      }
+      if (fixStatus) correctionUpdates[rowIndex] = fixStatus; else delete correctionUpdates[rowIndex];
+      const g = document.getElementById(`fixGroup_${studentId}`);
+      if (g) g.querySelectorAll('.fix-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-fix') === fixStatus));
     }
 
     function renderStudentRows() {
-      const container = document.getElementById('studentContainer');
-      container.innerHTML = '';
-      studentStates = {};
-
+      const container = document.getElementById('studentContainer'); container.innerHTML = '';
+      studentStates = {}; studentDateIssues = {};
       const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
-
-      if (list.length === 0) {
-        container.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">該班別暫無學生名單。</div>';
-        return;
-      }
+      if (list.length === 0) { container.innerHTML = '<div style="padding:20px; text-align:center; color:#888;">無學生名單。</div>'; return; }
 
       list.forEach(student => {
         const id = typeof student === 'object' ? student.id : student;
         const name = typeof student === 'object' ? student.name : student;
 
-        studentStates[id] = '全對';
+        studentStates[id] = ''; // 初始不預設任何按鈕 (空白)
+        studentDateIssues[id] = false;
         const prevRec = pendingRecordsMap[id];
 
-        let prevRecordHtml = '';
+        let prevHtml = '';
         if (prevRec) {
-          prevRecordHtml = `
+          prevHtml = `
             <div class="prev-record-box">
-              <span>📋 上次紀錄 (${prevRec.details}): <span class="prev-record-text">${prevRec.status}</span></span>
+              <span>📋 上次 (${prevRec.details}): <span class="prev-record-text">${prevRec.status}</span></span>
               <div class="fix-btn-group" id="fixGroup_${id}">
                 <button class="fix-btn" data-fix="要改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '要改正')">重改</button>
                 <button class="fix-btn" data-fix="欠改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '欠改正')">欠改</button>
                 <button class="fix-btn" data-fix="已完成改正" onclick="setFixStatus('${id}', ${prevRec.rowIndex}, '已完成改正')">已完成</button>
               </div>
-            </div>
-          `;
+            </div>`;
         }
 
-        const row = document.createElement('div');
-        row.className = 'student-row';
+        const row = document.createElement('div'); row.className = 'student-row';
         row.innerHTML = `
           <div><strong>(${id}) ${name}</strong></div>
           <div class="status-group">
-            ${prevRecordHtml}
+            ${prevHtml}
             <div id="statusGroup_${id}" style="display:inline-flex; gap:4px;">
-              <button class="status-btn active" data-status="全對" onclick="setStudentStatus('${id}', '全對')">全對</button>
-              <button class="status-btn" data-status="欠日期" onclick="setStudentStatus('${id}', '欠日期')">欠日期</button>
-              <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">要改正</button>
-              <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">欠交</button>
-              <button class="status-btn" data-status="缺席" onclick="setStudentStatus('${id}', '缺席')">缺席</button>
-              <button class="status-btn" data-status="申請延期" onclick="setStudentStatus('${id}', '申請延期')">申請延期</button>
+              <button class="status-btn" data-status="全對" onclick="setStudentStatus('${id}', '全對')">✅ 全對</button>
+              <button class="status-btn" data-status="欠交" onclick="setStudentStatus('${id}', '欠交')">❌ 欠交</button>
+              <button class="status-btn" data-status="要改正" onclick="setStudentStatus('${id}', '要改正')">✏️ 改正</button>
+              <button class="status-btn" data-status="缺席" onclick="setStudentStatus('${id}', '缺席')">🏠 缺席</button>
+              <button class="status-btn" data-status="申請延期" onclick="setStudentStatus('${id}', '申請延期')">⏳ 延期</button>
             </div>
-          </div>
-        `;
+            <button class="date-issue-btn" id="dateBtn_${id}" onclick="toggleDateIssue('${id}')">📅 欠日期</button>
+          </div>`;
         container.appendChild(row);
       });
     }
 
     function setStudentStatus(id, status) {
       studentStates[id] = status;
-      const group = document.getElementById(`statusGroup_${id}`);
-      group.querySelectorAll('.status-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-status') === status));
+      const g = document.getElementById(`statusGroup_${id}`);
+      g.querySelectorAll('.status-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-status') === status));
+    }
+
+    function toggleDateIssue(id) {
+      studentDateIssues[id] = !studentDateIssues[id];
+      const b = document.getElementById(`dateBtn_${id}`);
+      b.classList.toggle('active', studentDateIssues[id]);
     }
 
     function setAllStatus(status) {
@@ -666,16 +490,17 @@
       if (!apiUrl) { alert('請先設定 API URL！'); return; }
       if (!selectedType) { alert('請先選擇功課種類！'); return; }
 
-      // 鎖定儲存按鈕並顯示 Saving...
+      // 防呆：檢查是否有學生未點選狀態
+      const unselectedIds = Object.keys(studentStates).filter(id => studentStates[id] === '');
+      if (unselectedIds.length > 0) {
+        alert(`⚠️ 還有 ${unselectedIds.length} 位學生的狀態尚未點選！請確認每一位學生都有選取狀態後再儲存。`);
+        return;
+      }
+
       const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = '⏳ 儲存中 Saving...';
+      submitBtn.disabled = true; submitBtn.innerText = '⏳ 儲存中 Saving...';
 
-      const correctionsArray = Object.keys(correctionUpdates).map(rIndex => ({
-        rowIndex: parseInt(rIndex),
-        newStatus: correctionUpdates[rIndex]
-      }));
-
+      const correctionsArray = Object.keys(correctionUpdates).map(rIndex => ({ rowIndex: parseInt(rIndex), newStatus: correctionUpdates[rIndex] }));
       const payload = {
         action: 'saveHomework',
         payload: {
@@ -691,8 +516,7 @@
           students: Object.keys(studentStates).map(id => {
             const list = (rawSubjectData[currentSubject] || {})[currentClass] || [];
             const stObj = list.find(s => (typeof s === 'object' ? s.id : s) == id);
-            const stName = typeof stObj === 'object' ? stObj.name : stObj;
-            return { id: id, name: stName, status: studentStates[id] };
+            return { id: id, name: typeof stObj === 'object' ? stObj.name : stObj, status: studentStates[id], hasDateIssue: studentDateIssues[id] };
           }),
           corrections: correctionsArray
         }
@@ -700,16 +524,11 @@
 
       fetch(apiUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
         .then(() => {
-          // 恢復按鈕狀態
-          submitBtn.disabled = false;
-          submitBtn.innerText = '儲存新功課至 Google Sheets';
-          alert('✅ 功課記錄與改正跟進已成功儲存！');
-          startGrading();
-        })
-        .catch(() => {
-          submitBtn.disabled = false;
-          submitBtn.innerText = '儲存新功課至 Google Sheets';
-          alert('⚠️ 儲存失敗，請檢查網路連線。');
+          submitBtn.disabled = false; submitBtn.innerText = '儲存新功課至 Google Sheets';
+          alert('✅ 儲存成功！'); startGrading();
+        }).catch(() => {
+          submitBtn.disabled = false; submitBtn.innerText = '儲存新功課至 Google Sheets';
+          alert('⚠️ 儲存失敗。');
         });
     }
   </script>

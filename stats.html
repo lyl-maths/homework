@@ -35,28 +35,22 @@
     .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     h1 { color: var(--primary-color); margin: 0; }
 
-    .nav-btn-group { display: flex; gap: 8px; }
-
-    .nav-btn {
-      padding: 8px 14px; border-radius: 6px; font-weight: bold;
-      cursor: pointer; background-color: #6c757d; color: white; border: none;
-    }
-    .btn-theme { background-color: var(--primary-color); }
+    .nav-btn-group { display: flex; gap: 8px; align-items: center; }
+    .nav-btn { padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; background-color: #6c757d; color: white; border: none; }
+    .btn-theme { background-color: var(--primary-color); padding: 6px 10px; font-size: 1.1em; border-radius: 50%; }
 
     .filter-card {
       background: var(--accent-info); border: 1px solid var(--border-color);
       padding: 20px; border-radius: 10px; margin-bottom: 25px;
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
     }
-
     .filter-group { display: flex; flex-direction: column; }
     .filter-group label { font-weight: bold; margin-bottom: 6px; font-size:0.9em; }
     .filter-group input, .filter-group select { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); }
 
     .search-btn {
       grid-column: 1 / -1; background-color: var(--primary-color); color: white;
-      border: none; padding: 12px; font-size: 1.05em; font-weight: bold;
-      border-radius: 6px; cursor: pointer;
+      border: none; padding: 12px; font-size: 1.05em; font-weight: bold; border-radius: 6px; cursor: pointer;
     }
     .search-btn:disabled { background-color: #a0aec0 !important; cursor: not-allowed !important; }
 
@@ -68,25 +62,15 @@
     .badge-missing { background: #dc3545; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
     .badge-date { background: #d97706; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
     .badge-overdue-fix { background: #e65100; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
-    .badge-fix { background: #ffc107; color: black; padding: 3px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; }
 
     .student-row-click { cursor: pointer; }
     .student-row-click:hover { background-color: #f1f5f9; }
 
-    /* 個人化 Modal */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
-    }
-    .modal-box {
-      background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color);
-    }
+    /* Modal */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-box { background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); border: 1px solid var(--border-color); }
     .option-btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
-    .option-btn {
-      padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg);
-      color: var(--text-color); border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center;
-    }
+    .option-btn { padding: 10px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-color); border-radius: 8px; cursor: pointer; font-weight: bold; text-align: center; }
     .option-btn.active { border-color: var(--primary-color); background-color: var(--primary-color); color: white; }
   </style>
 </head>
@@ -96,8 +80,8 @@
     <div class="header-bar">
       <h1>📊 學生功課欠交日數統計</h1>
       <div class="nav-btn-group">
-        <button class="nav-btn btn-theme" onclick="openThemeModal()">🎨 個人化介面</button>
-        <button class="nav-btn" onclick="navigateToHome()">⬅️ 返回主頁登記</button>
+        <button class="nav-btn btn-theme" onclick="openThemeModal()" title="個人化介面">⚙️</button>
+        <button class="nav-btn" onclick="navigateToHome()">⬅️ 返回主頁</button>
       </div>
     </div>
 
@@ -112,21 +96,15 @@
       </div>
       <div class="filter-group">
         <label for="subjectSelect">科目：</label>
-        <select id="subjectSelect">
-          <option value="ALL">全部科目</option>
-        </select>
+        <select id="subjectSelect"><option value="ALL">全部科目</option></select>
       </div>
       <div class="filter-group">
         <label for="classSelect">班別：</label>
-        <select id="classSelect">
-          <option value="ALL">全部班別</option>
-        </select>
+        <select id="classSelect"><option value="ALL">全部班別</option></select>
       </div>
       <div class="filter-group">
-        <label for="studentSelect">👤 特定學生 (與家長溝通)：</label>
-        <select id="studentSelect" onchange="onStudentSelectChange()">
-          <option value="ALL">全部學生</option>
-        </select>
+        <label for="studentSelect">👤 特定學生：</label>
+        <select id="studentSelect" onchange="renderRecordsTable()"><option value="ALL">全部學生</option></select>
       </div>
       <button class="search-btn" id="searchBtn" onclick="fetchStatsData()">🔍 查詢統計資料</button>
     </div>
@@ -138,9 +116,9 @@
           <th>班別</th>
           <th>學號</th>
           <th>學生姓名</th>
-          <th>欠交功課日數 (累計)</th>
-          <th>欠日期次數 (累計)</th>
-          <th>欠改正次數 (累計)</th>
+          <th>❌ 欠交日數 (累計)</th>
+          <th>📅 欠日期次數 (累計)</th>
+          <th>✏️ 欠改正次數 (累計)</th>
         </tr>
       </thead>
       <tbody id="summaryTableBody">
@@ -167,11 +145,80 @@
     </table>
   </div>
 
+  <!-- 個人化 Modal -->
+  <div class="modal-overlay" id="themeModal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0;">⚙️ 個人化介面設定</h3>
+        <span onclick="closeThemeModal()" style="cursor:pointer; font-weight:bold;">✕</span>
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="font-weight:bold;">🎨 顏色主題：</label>
+        <div class="option-btn-grid" id="colorBtnGroup">
+          <button class="option-btn color-btn" data-theme="blue" onclick="selectThemeBtn('blue')">💙 藍色</button>
+          <button class="option-btn color-btn" data-theme="orange" onclick="selectThemeBtn('orange')">🧡 橙色</button>
+          <button class="option-btn color-btn" data-theme="yellow" onclick="selectThemeBtn('yellow')">💛 黃色</button>
+          <button class="option-btn color-btn" data-theme="green" onclick="selectThemeBtn('green')">💚 綠色</button>
+          <button class="option-btn color-btn" data-theme="black" onclick="selectThemeBtn('black')">🖤 黑色</button>
+          <button class="option-btn color-btn" data-theme="purple" onclick="selectThemeBtn('purple')">💜 紫色</button>
+        </div>
+      </div>
+      <div style="margin-bottom:25px;">
+        <label style="font-weight:bold;">🔤 字體大小：</label>
+        <div class="option-btn-grid" style="grid-template-columns: repeat(2, 1fr);" id="fontBtnGroup">
+          <button class="option-btn font-btn" data-size="13px" onclick="selectFontBtn('13px')">小 (13px)</button>
+          <button class="option-btn font-btn" data-size="15px" onclick="selectFontBtn('15px')">標準 (15px)</button>
+          <button class="option-btn font-btn" data-size="18px" onclick="selectFontBtn('18px')">大 (18px)</button>
+          <button class="option-btn font-btn" data-size="21px" onclick="selectFontBtn('21px')">特大 (21px)</button>
+        </div>
+      </div>
+      <button onclick="saveThemeSettings()" style="width:100%; padding:12px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:bold; font-size:1.05em; cursor:pointer;">💾 儲存設定</button>
+    </div>
+  </div>
+
   <script>
-    let rawSummaryData = [];
-    let rawRecordsData = [];
+    let tempSelectedTheme = 'blue', tempSelectedFont = '15px';
+    let rawSummaryData = [], rawRecordsData = [];
+
+    function applySavedTheme() {
+      const theme = localStorage.getItem('homework_theme') || 'blue';
+      const fontSize = localStorage.getItem('homework_font_size') || '15px';
+      const root = document.documentElement;
+      root.style.setProperty('--base-font-size', fontSize);
+      if (theme === 'orange') {
+        root.style.setProperty('--primary-color', '#e65100'); root.style.setProperty('--bg-color', '#fff3e0'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#3e2723'); root.style.setProperty('--border-color', '#ffe0b2'); root.style.setProperty('--accent-info', '#fff8e1');
+      } else if (theme === 'yellow') {
+        root.style.setProperty('--primary-color', '#f57f17'); root.style.setProperty('--bg-color', '#fffde7'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#332701'); root.style.setProperty('--border-color', '#fff9c4'); root.style.setProperty('--accent-info', '#fffde7');
+      } else if (theme === 'green') {
+        root.style.setProperty('--primary-color', '#2e7d32'); root.style.setProperty('--bg-color', '#f1f8e9'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#1b5e20'); root.style.setProperty('--border-color', '#c8e6c9'); root.style.setProperty('--accent-info', '#e8f5e9');
+      } else if (theme === 'black') {
+        root.style.setProperty('--primary-color', '#4dabf7'); root.style.setProperty('--bg-color', '#121212'); root.style.setProperty('--card-bg', '#1e1e1e'); root.style.setProperty('--text-color', '#e0e0e0'); root.style.setProperty('--border-color', '#444444'); root.style.setProperty('--accent-info', '#2a2a2a');
+      } else if (theme === 'purple') {
+        root.style.setProperty('--primary-color', '#6f42c1'); root.style.setProperty('--bg-color', '#f3e8ff'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#3b0764'); root.style.setProperty('--border-color', '#d8b4fe'); root.style.setProperty('--accent-info', '#faf5ff');
+      } else {
+        root.style.setProperty('--primary-color', '#0056b3'); root.style.setProperty('--bg-color', '#f4f7f9'); root.style.setProperty('--card-bg', '#ffffff'); root.style.setProperty('--text-color', '#333333'); root.style.setProperty('--border-color', '#cccccc'); root.style.setProperty('--accent-info', '#f0f7ff');
+      }
+    }
+
+    function openThemeModal() {
+      tempSelectedTheme = localStorage.getItem('homework_theme') || 'blue';
+      tempSelectedFont = localStorage.getItem('homework_font_size') || '15px';
+      document.querySelectorAll('#colorBtnGroup .option-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-theme') === tempSelectedTheme));
+      document.querySelectorAll('#fontBtnGroup .option-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-size') === tempSelectedFont));
+      document.getElementById('themeModal').style.display = 'flex';
+    }
+    function selectThemeBtn(t) { tempSelectedTheme = t; document.querySelectorAll('#colorBtnGroup .option-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-theme') === t)); }
+    function selectFontBtn(s) { tempSelectedFont = s; document.querySelectorAll('#fontBtnGroup .option-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-size') === s)); }
+    function closeThemeModal() { document.getElementById('themeModal').style.display = 'none'; }
+    function saveThemeSettings() { localStorage.setItem('homework_theme', tempSelectedTheme); localStorage.setItem('homework_font_size', tempSelectedFont); applySavedTheme(); closeThemeModal(); }
+
+    function navigateToHome() {
+      const cur = window.location.pathname;
+      window.location.replace(window.location.origin + cur.substring(0, cur.lastIndexOf('/') + 1) + 'index.html');
+    }
 
     window.onload = function() {
+      applySavedTheme();
       const today = new Date().toISOString().split('T')[0];
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       document.getElementById('startDate').value = thirtyDaysAgo;
@@ -182,110 +229,79 @@
     function fetchStatsData() {
       const apiUrl = localStorage.getItem('homework_system_api_url');
       if (!apiUrl) { alert('請先設定 Web App URL！'); return; }
+      const btn = document.getElementById('searchBtn'); btn.disabled = true; btn.innerText = '⏳ 載入中...';
+      const sDate = document.getElementById('startDate').value, eDate = document.getElementById('endDate').value;
+      const sub = document.getElementById('subjectSelect').value, cls = document.getElementById('classSelect').value;
 
-      const searchBtn = document.getElementById('searchBtn');
-      searchBtn.disabled = true;
-      searchBtn.innerText = '⏳ 載入中 Loading...';
-
-      const startDate = document.getElementById('startDate').value;
-      const endDate = document.getElementById('endDate').value;
-      const subject = document.getElementById('subjectSelect').value;
-      const classGroup = document.getElementById('classSelect').value;
-
-      const url = `${apiUrl}?action=getStats&startDate=${startDate}&endDate=${endDate}&subject=${encodeURIComponent(subject)}&classGroup=${encodeURIComponent(classGroup)}`;
-
-      fetch(url)
+      fetch(`${apiUrl}?action=getStats&startDate=${sDate}&endDate=${eDate}&subject=${encodeURIComponent(sub)}&classGroup=${encodeURIComponent(cls)}`)
         .then(res => res.json())
         .then(res => {
-          searchBtn.disabled = false;
-          searchBtn.innerText = '🔍 查詢統計資料';
-
+          btn.disabled = false; btn.innerText = '🔍 查詢統計資料';
           if (res.status === 'success') {
-            rawSummaryData = res.summary || [];
-            rawRecordsData = res.records || [];
-            renderSummaryTable(rawSummaryData);
-            renderRecordsTable();
+            updateFilterOptions(res.subjects || [], res.classes || []);
+            rawSummaryData = res.summary || []; rawRecordsData = res.records || [];
+            populateStudentDropdown(); renderSummaryTable(rawSummaryData); renderRecordsTable();
           }
-        })
-        .catch(() => {
-          searchBtn.disabled = false;
-          searchBtn.innerText = '🔍 查詢統計資料';
-          alert('連線錯誤。');
-        });
+        }).catch(() => { btn.disabled = false; btn.innerText = '🔍 查詢統計資料'; alert('連線錯誤。'); });
+    }
+
+    function updateFilterOptions(subjects, classes) {
+      const subSel = document.getElementById('subjectSelect'), clsSel = document.getElementById('classSelect');
+      const curSub = subSel.value, curCls = clsSel.value;
+      subSel.innerHTML = '<option value="ALL">全部科目</option>';
+      subjects.forEach(s => { const opt = document.createElement('option'); opt.value = s; opt.innerText = s; if(s===curSub) opt.selected=true; subSel.appendChild(opt); });
+      clsSel.innerHTML = '<option value="ALL">全部班別</option>';
+      classes.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.innerText = c; if(c===curCls) opt.selected=true; clsSel.appendChild(opt); });
+    }
+
+    function populateStudentDropdown() {
+      const sel = document.getElementById('studentSelect'), cur = sel.value;
+      sel.innerHTML = '<option value="ALL">全部學生</option>';
+      rawSummaryData.forEach(st => {
+        const opt = document.createElement('option'); opt.value = st.studentId;
+        opt.innerText = `(${st.classGroup}) (${st.studentId}) ${st.studentName}`;
+        if(st.studentId === cur) opt.selected = true;
+        sel.appendChild(opt);
+      });
     }
 
     function renderSummaryTable(summary) {
-      const tbody = document.getElementById('summaryTableBody');
-      tbody.innerHTML = '';
-
-      if (summary.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">此期間無記錄。</td></tr>';
-        return;
-      }
-
+      const tbody = document.getElementById('summaryTableBody'); tbody.innerHTML = '';
+      if (summary.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">此期間無記錄。</td></tr>'; return; }
       summary.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = 'student-row-click';
-        tr.onclick = () => {
-          document.getElementById('studentSelect').value = item.studentId;
-          renderRecordsTable();
-        };
-
+        const tr = document.createElement('tr'); tr.className = 'student-row-click';
+        tr.onclick = () => { document.getElementById('studentSelect').value = item.studentId; renderRecordsTable(); };
         tr.innerHTML = `
-          <td>${item.classGroup}</td>
-          <td>${item.studentId}</td>
-          <td><strong>${item.studentName}</strong></td>
+          <td>${item.classGroup}</td><td>${item.studentId}</td><td><strong>${item.studentName}</strong></td>
           <td><span class="badge-missing">${item.missingDays || 0} 天</span></td>
           <td><span class="badge-date">${item.missingDateCount || 0} 次</span></td>
-          <td><span class="badge-overdue-fix">${item.overdueFixCount || 0} 次</span></td>
-        `;
+          <td><span class="badge-overdue-fix">${item.overdueFixCount || 0} 次</span></td>`;
         tbody.appendChild(tr);
       });
     }
 
     function renderRecordsTable() {
-      const tbody = document.getElementById('recordsTableBody');
-      tbody.innerHTML = '';
-
+      const tbody = document.getElementById('recordsTableBody'); tbody.innerHTML = '';
       let filtered = rawRecordsData;
-      const selectedStudentId = document.getElementById('studentSelect').value;
-      if (selectedStudentId !== 'ALL') {
-        filtered = filtered.filter(r => r.studentId === selectedStudentId);
-      }
+      const selId = document.getElementById('studentSelect').value;
+      if (selId !== 'ALL') filtered = filtered.filter(r => r.studentId === selId);
 
-      const activeRecords = filtered.filter(r => 
-        r.status === '欠交' || r.status === '欠日期' || r.status === '欠改正'
-      );
+      const active = filtered.filter(r => r.status.indexOf('欠交') !== -1 || r.status.indexOf('欠日期') !== -1 || r.status.indexOf('欠改正') !== -1);
+      if (active.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#28a745; font-weight:bold;">🎉 無未完成或需跟進紀錄！</td></tr>'; return; }
 
-      if (activeRecords.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#28a745; font-weight:bold;">🎉 無未完成或需跟進紀錄！</td></tr>';
-        return;
-      }
-
-      activeRecords.forEach(item => {
+      active.forEach(item => {
         const tr = document.createElement('tr');
-        let badgeClass = 'badge-fix';
-        if (item.status === '欠交') badgeClass = 'badge-missing';
-        else if (item.status === '欠日期') badgeClass = 'badge-date';
-        else if (item.status === '欠改正') badgeClass = 'badge-overdue-fix';
+        let bClass = 'badge-missing';
+        if (item.status.indexOf('欠日期') !== -1) bClass = 'badge-date';
+        else if (item.status.indexOf('欠改正') !== -1) bClass = 'badge-overdue-fix';
 
         tr.innerHTML = `
-          <td>${item.date}</td>
-          <td>${item.subject}</td>
-          <td>${item.classGroup}</td>
+          <td>${item.date}</td><td>${item.subject}</td><td>${item.classGroup}</td>
           <td><strong>(${item.studentId}) ${item.studentName}</strong></td>
-          <td><span class="badge-type">${item.type}</span></td>
-          <td>${item.details}</td>
-          <td><span class="${badgeClass}">${item.status}</span></td>
-        `;
+          <td><span class="badge-type">${item.type}</span></td><td>${item.details}</td>
+          <td><span class="${bClass}">${item.status}</span></td>`;
         tbody.appendChild(tr);
       });
-    }
-
-    function navigateToHome() {
-      const currentPath = window.location.pathname;
-      const directory = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      window.location.replace(window.location.origin + directory + 'index.html');
     }
   </script>
 </body>
